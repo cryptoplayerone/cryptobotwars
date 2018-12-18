@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-content>
+  <v-app dark>
+    <v-content class="backgr">
         <Game
             :userInfo="userInfo"
             v-on:needs-info="needsInfo()"
@@ -40,3 +40,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.backgr {
+    background-color: black;
+}
+</style>

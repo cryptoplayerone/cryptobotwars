@@ -5,7 +5,6 @@
         persistent
     >
         <v-btn absolute small top right fab
-            color="white"
             class="menu help"
             slot="activator"
         >

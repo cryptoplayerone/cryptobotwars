@@ -1,10 +1,8 @@
 <template>
     <swiper ref="mySwiper" :options="swiperOptions">
         <swiper-slide class="swiper-margin no-swipe">
-            <v-container fill-height>
-                <v-layout>
+            <v-container>
                     <StartPage v-on:go="nextSlide()"/>
-                </v-layout>
             </v-container>
         </swiper-slide>
         <swiper-slide class="swiper-margin no-swipe">
@@ -12,6 +10,8 @@
                 <v-flex xs12>
                     <GameOpen
                         :timer="timer"
+                        :player="player"
+                        :move="move"
                         v-on:player-chosen="setPlayer"
                         v-on:move-chosen="setMove"
                         v-on:play="userPlay"
