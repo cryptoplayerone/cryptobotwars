@@ -168,17 +168,17 @@ export default {
                     this.$emit('needs-info');
                     return;
                 }
-                this.setCurrentGame().then(() => {
-                    if (this.gameState == GameState.resolved) {
+                this.setCurrentGame().then(({ game, gameState, wait }) => {
+                    if (gameState == GameState.resolved) {
                         console.log('gameState resolved, starting new game');
                         return this.startGame();
                     }
                     return;
                 }).then(() => {
                     return this.setCurrentGame();
-                }).then(() => {
-                    if (this.gameState == GameState.closed) {
-                        alert(`wait for results on previous game: ${Math.floor(this.wait / 1000)} sec`);
+                }).then(({ game, gameState, wait }) => {
+                    if (gameState == GameState.closed) {
+                        alert(`wait for results on previous game: ${Math.floor(wait / 1000)} sec`);
                     } else {
                         this.swiper.slideNext(1000, false);
                     }
@@ -249,33 +249,41 @@ export default {
         },
         setCurrentGame() {
             return this.guardianApi.getGame().then((response) => {
-                let deltaTime;
+                let deltaTime, gameState, wait;
                 const game = response.data[0];
-                this.game = game;
 
                 deltaTime = new Date().getTime() - new Date(game.startTime).getTime();
-                this.timer.intervalGame = game.gameTime;
-                this.timer.intervalResolve = game.gameTime + game.resolveTime;
-                this.timer.value = new Date(game.startTime).getTime();
 
                 console.log('setCurrentGame', game);
                 console.log('this.timer', this.timer);
 
                 if (deltaTime < game.gameTime) {
                     // We are during game time, users can make moves
-                    this.gameState = GameState.open;
+                    gameState = GameState.open;
                 } else if (deltaTime < (game.gameTime + game.resolveTime)) {
                     // We are during the game resolution time, users wait for results and payments
-                    this.gameState = GameState.closed;
-                    this.wait = this.timer.intervalResolve - deltaTime;
-                    console.log('wait', this.wait);
+                    gameState = GameState.closed;
+                    wait = this.timer.intervalResolve - deltaTime;
+                    console.log('wait', wait);
                 } else {
                     // Game and resolution has ended.
                     // We query for a new game
                     // setTimeout(this.setCurrentGame, 2000);
-                    this.gameState = GameState.resolved;
+                    gameState = GameState.resolved;
                 }
-                console.log('gameState', GameStateIndex[this.gameState]);
+
+                if (gameState == GameState.open) {
+                    this.game = game;
+                    this.timer.intervalGame = game.gameTime;
+                    this.timer.intervalResolve = game.gameTime + game.resolveTime;
+                    this.timer.value = new Date(game.startTime).getTime();
+                    this.gameState = gameState;
+                    this.wait = wait;
+                    console.log('gameState', GameStateIndex[this.gameState]);
+                }
+
+                return { game, gameState, wait };
+
             });
         },
         startGame() {
@@ -339,7 +347,11 @@ export default {
                 const lastPaymentReceived = payments.pop();
                 console.log('lastPaymentReceived', lastPaymentReceived);
                 console.log('this.raiden_payment', this.raiden_payment);
-                if (lastPaymentReceived && lastPaymentReceived.identifier === this.raiden_payment.identifier) {
+                if (
+                    lastPaymentReceived &&
+                    this.raiden_payment &&
+                    lastPaymentReceived.identifier === this.raiden_payment.identifier
+                ) {
                     this.winningPayment = lastPaymentReceived;
                     console.log('winningPayment set');
                 }
