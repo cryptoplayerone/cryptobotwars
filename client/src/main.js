@@ -10,6 +10,9 @@ import App from './App.vue';
 
 import '@fortawesome/fontawesome-free/css/all.css';
 
+import VueYouTubeEmbed from 'vue-youtube-embed'
+Vue.use(VueYouTubeEmbed)
+
 Vue.config.productionTip = false;
 
 Vue.use(VueAxios, axios);
