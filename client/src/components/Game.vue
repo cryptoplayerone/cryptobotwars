@@ -32,6 +32,23 @@
                 v-on:restart-game="restartGame()"
             />
         </swiper-slide>
+        <swiper-slide class="swiper-margin no-swipe">
+            <v-layout text-xs-center wrap fullheight>
+                <v-flex xs8>
+                    <RobotLive/>
+                </v-flex>
+                <v-flex xs4>
+                    <GameClosed
+                        v-if="game"
+                        :game="game"
+                        :player="player"
+                        :move="move"
+                        :winningPayment="winningPayment"
+                        v-on:restart-game="restartGame()"
+                    />
+                </v-flex>
+            </v-layout>
+        </swiper-slide>
 
         <!-- <v-btn absolute small top left fab
             color="white"
@@ -61,6 +78,7 @@ import StartPage from './StartPage';
 import GameOpen from './GameOpen';
 import GameClosed from './GameClosed';
 import GameEnd from './GameEnd';
+import RobotLive from './RobotLive';
 import { MovesToIndex, IndexToMoves, GameGuardian, GameState, GameStateIndex, Network } from '../constants';
 import { UserRaidenApi, GuardianApi } from '../utils';
 
@@ -76,6 +94,7 @@ export default {
         GameOpen,
         GameClosed,
         GameEnd,
+        RobotLive,
     },
     data() {
         return {
@@ -113,6 +132,11 @@ export default {
     watch: {
         userInfo() {
             this.setUserRaidenApi();
+        },
+        game() {
+            if (this.game && this.game.winningMove) {
+                this.swiper.slideTo(3, 1000, false);
+            }
         },
     },
     mounted() {
