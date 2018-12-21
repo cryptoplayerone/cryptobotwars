@@ -188,6 +188,7 @@ export class GameController {
         move1,
         move2,
         amount: winner_amount,
+        amountGuardian: guardian_amount,
         players: moves.length,
     };
     console.log('--gameUpdate', gameUpdate);

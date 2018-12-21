@@ -44,10 +44,16 @@ export class Game extends Entity {
   })
   move2: string;
 
+  // Each winner gets this amount
   @property({
     type: 'number',
   })
   amount: number;
+
+  @property({
+    type: 'number',
+  })
+  amountGuardian: number;
 
   @property({
     type: 'number',
