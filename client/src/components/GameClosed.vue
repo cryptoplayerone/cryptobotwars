@@ -1,6 +1,6 @@
 <template>
     <v-container fill-height nomargin>
-        <v-layout text-xs-center wrap v-if="move">
+        <v-layout text-xs-center wrap v-if="move && raiden_payment && !winningMove">
             <youtube
                 :video-id="'1L5gW1fhmbc'"
                 :player-vars="{ autoplay: 1 }"
@@ -9,7 +9,6 @@
                 @ready="videoReady"
                 player-width="98%"
                 player-height="100%"
-                :mute="true"
             ></youtube>
         </v-layout>
         <v-layout
@@ -23,6 +22,7 @@
                     <v-icon x-large>{{ `fa-hand-${winningMove}` }}</v-icon>
                 </v-btn>
                 <p class="display-2">{{ `You ${MovesToIndex[winningMove] === move ? 'won!': 'lost..'}`}}</p>
+                <p class="subheading">{{ `${game.players} players have played!`}}</p>
                 <p class="subheading" v-if="MovesToIndex[winningMove] === move">
                     {{`You should receive ${parseFloat(game.amount / 10**18).toFixed(13)} WETH`}}
                 </p>
@@ -46,7 +46,7 @@
             <v-flex xs12 v-if="winningPayment">
                 <div v-if="MovesToIndex[winningMove] === move">
                     <p class="subheading">
-                        {{`You won ${parseFloat(winningPayment.amount / 10**18).toFixed(13)} WETH.`}}
+                        {{`You won ${parseFloat(game.amount / 10**18).toFixed(13)} WETH.`}}
                     </p>
                     <p class="subheading" text-xs-center wrap>
                         {{displayWinningPayment()}}
@@ -71,7 +71,7 @@ export default {
         GameClosedChoices,
         Timer,
     },
-    props: ['game', 'timer', 'player', 'move', 'winningPayment'],
+    props: ['game', 'timer', 'player', 'move', 'winningPayment', 'raiden_payment'],
     data: () => ({
         IndexToPlayer,
         MovesToIndex,
@@ -94,7 +94,7 @@ export default {
             if (typeof this.winningPayment === 'string') {
                 return this.winningPayment;
             }
-            return `Guardian ${GameGuardian.raiden_address[Network]} sent you a micropayment with identifier ${this.winningPayment.identifier} at log_time ${this.winningPayment.log_time}.`
+            return `CryptoWars Guardian ${GameGuardian.raiden_address[Network]} sent you a micropayment with identifier ${this.winningPayment.identifier} at log_time ${this.winningPayment.log_time}.`
         },
         videoEnded() {
             this.videoPlaying = false;

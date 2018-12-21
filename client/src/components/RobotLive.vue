@@ -2,7 +2,6 @@
     <youtube
         :video-id="liveVideoId"
         :player-vars="{ autoplay: 1 }"
-        :mute="true"
         class="backgr-live-play fullheight"
         player-width="100%"
         player-height="100%"
