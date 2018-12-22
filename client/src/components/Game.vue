@@ -2,7 +2,7 @@
     <swiper ref="mySwiper" :options="swiperOptions">
         <swiper-slide class="swiper-margin no-swipe">
             <v-container>
-                    <StartPage v-on:go="nextSlide()"/>
+                    <StartPage v-on:go="tryGoToOpenState()"/>
             </v-container>
         </swiper-slide>
         <swiper-slide class="swiper-margin no-swipe">
@@ -136,7 +136,7 @@ export default {
         },
         game() {
             if (this.game && this.game.winningMove) {
-                this.swiper.slideTo(3, 1000, false);
+                this.goToResolvedState();
             }
         },
     },
@@ -155,43 +155,49 @@ export default {
         restartGame() {
             this.swiper.slideTo(0, 1000, false);
         },
-        nextSlide() {
-            if (this.swiper.realIndex == 0) {
-                console.log('this.userInfo', this.userInfo);
-                this.game = null;
-                this.raiden_payment = null;
-                this.winningPayment = null;
-                this.player = null;
-                this.move = null;
-                this.moveStarted = null;
-                this.secret = null;
-                if (!this.userInfo.address || !this.userInfo.ip) {
-                    this.$emit('needs-info');
-                    return;
-                }
-                this.setCurrentGame().then(({ game, gameState, wait }) => {
-                    if (gameState == GameState.resolved) {
-                        console.log('gameState resolved, starting new game');
-                        return this.startGame();
-                    }
-                    return;
-                }).then(() => {
-                    return this.setCurrentGame();
-                }).then(({ game, gameState, wait }) => {
-                    if (gameState == GameState.closed) {
-                        alert(`wait for results on previous game: ${Math.floor(wait / 1000)} sec`);
-                    } else {
-                        this.swiper.slideNext(1000, false);
-                    }
-                });
-            } else {
-                this.swiper.slideNext(1000, false);
+        goToOpenState() {
+            this.swiper.slideTo(1, 1000, false);
+        },
+        goToCloseState() {
+            this.swiper.slideTo(2, 1000, false);
+        },
+        goToResolvedState() {
+            this.swiper.slideTo(3, 1000, false);
+        },
+        tryGoToOpenState() {
+            console.log('this.userInfo', this.userInfo);
+            this.game = null;
+            this.raiden_payment = null;
+            this.winningPayment = null;
+            this.player = null;
+            this.move = null;
+            this.moveStarted = null;
+            this.secret = null;
+            if (!this.userInfo.address || !this.userInfo.ip) {
+                this.$emit('needs-info');
+                return;
             }
+            this.setCurrentGame().then(({ game, gameState, wait }) => {
+                if (gameState == GameState.resolved) {
+                    console.log('gameState resolved, starting new game');
+                    return this.startGame();
+                }
+                return;
+            }).then(() => {
+                return this.setCurrentGame();
+            }).then(({ game, gameState, wait }) => {
+                if (gameState == GameState.closed) {
+                    alert(`wait for results on previous game: ${Math.floor(wait / 1000)} sec`);
+                } else {
+                    this.goToOpenState();
+                }
+            });
         },
         userPlay() {
             let self = this;
             if (!this.player || !this.move) {
                 alert('Choose a player and a move.');
+                return;
             }
 
             async function play() {
@@ -208,7 +214,7 @@ export default {
                     console.log('raiden payment response', response);
                     self.paymentIdentifier = null;
                     self.raiden_payment = response.data;
-                    self.nextSlide();
+                    self.goToCloseState();
                 }).catch((error) => {
                     alert(`${error} on ${self.userRaidenApi.ip}`);
                 });
@@ -295,11 +301,11 @@ export default {
             // If a move was sent go to the next step
             // Go back to start if the game was not played
             if (!this.raiden_payment) {
-                this.swiper.slideTo(0, 1000, false);
+                this.restartGame();
             } else {
                 // Just in case the next step slide did not work after the payment was made
                 if (this.swiper.realIndex == 1) {
-                    this.swiper.slideNext(1000, false);
+                    this.goToCloseState();
                 }
                 // Send the move data to the guardian server
                 this.guardianApi.revealMove(this.moveStarted._id, {
