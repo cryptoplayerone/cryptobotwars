@@ -205,7 +205,11 @@ export default {
                     await self.initMove();
                 }
                 if (!self.paymentIdentifier) {
-                    throw new Error('Payment identifier not received.')
+                    throw new Error('Payment identifier not received.');
+                }
+                if (self.raiden_payment) {
+                    console.log('Raiden payment already sent.');
+                    return;
                 }
                 self.userRaidenApi.pay({
                     amount: GameGuardian.amount,
@@ -333,6 +337,8 @@ export default {
 
                     if (IndexToMoves[this.move] === game.winningMove) {
                         this.tryGetWinningPayment();
+                    } else {
+                        this.winningPayment = 'You lost.';
                     }
                 }).catch(alert);
         },

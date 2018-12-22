@@ -61,12 +61,15 @@
             <v-flex xs12>
                 </br></br>
                 <v-btn
-                    v-on:click.stop="$emit('play')"
+                    v-on:click.stop="play()"
                     large fab
-                    :disabled="!player || !move"
+                    :disabled="!player || !move || sendingPlay"
                 >
                     <v-icon light x-large>fa-check</v-icon>
                 </v-btn>
+                <p class="subheading" text-xs-center wrap v-if="sendingPlay">
+                    Sending Raiden payment from your node..
+                </p>
             </v-flex>
         </v-layout>
     </v-container>
@@ -85,6 +88,7 @@ export default {
         MovesToIndex,
         PlayerToIndex,
         GameGuardian,
+        sendingPlay: false,
     }),
     methods: {
         choosePlayer(index) {
@@ -92,6 +96,10 @@ export default {
         },
         chooseMove(index) {
             this.$emit('move-chosen', index);
+        },
+        play() {
+            this.sendingPlay = true;
+            this.$emit('play');
         }
     }
 }
