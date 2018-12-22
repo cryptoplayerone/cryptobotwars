@@ -330,20 +330,28 @@ export default {
                         return;
                     }
                     this.game = game;
-                    this.getWinningPayment().then(() => {
-                        // Do one retry in 4 sec.
-                        if (!this.winningPayment) {
-                            setTimeout(() => {
-                                console.log('Retrying getWinningPayment');
-                                this.getWinningPayment().then(() => {
-                                    if (!this.winningPayment) {
-                                        this.winningPayment = 'Could not find Raiden payment.';
-                                    }
-                                })
-                            }, 4000);
-                        }
-                    });
+
+                    if (IndexToMoves[this.move] === game.winningMove) {
+                        this.tryGetWinningPayment();
+                    }
                 }).catch(alert);
+        },
+        tryGetWinningPayment() {
+            let repeatTimes = 0;
+            let intervalID = setInterval(() => {
+                repeatTimes ++;
+                if (!this.winningPayment) {
+                    if (repeatTimes < 10) {
+                        console.log('Trying to find winning Raiden payment from CyryptoWarsGuardian');
+                        this.getWinningPayment();
+                    } else {
+                        this.winningPayment = 'Could not find Raiden payment.';
+                        clearInterval(intervalID);
+                    }
+                } else {
+                    clearInterval(intervalID);
+                }
+            }, 2000);
         },
         getWinningPayment() {
             return this.userRaidenApi.payments().then((response) => {
