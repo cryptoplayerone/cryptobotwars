@@ -1,25 +1,26 @@
 <template>
     <v-layout wrap>
         <v-flex xs2 offset-xs4>
-            <v-img v-if="player"
-              :src="`./${IndexToPlayer[player]}.svg`"
-              aspect-ratio="1"
-              height="72px"
-              width="72px"
-              class="margin"
-            ></v-img>
+            <v-avatar
+                class="v-btn v-btn--depressed v-btn--floating"
+                :size="80"
+                :light="us === '1'"
+                v-on:click.stop="choosePlayer(PlayerToIndex.vader)"
+            >
+                <img :src="`./${IndexToPlayer[player]}_t2.png`" alt="avatar">
+            </v-avatar>
         </v-flex>
         <v-flex xs2>
             <v-btn v-if="move"
-                large fab
+                large fab light
             >
-                <v-icon x-large>{{ `fa-hand-${IndexToMoves[move]}` }}</v-icon>
+                <v-icon dark x-large>{{ `fa-hand-${IndexToMoves[move]}` }}</v-icon>
             </v-btn>
             <Timer v-else-if="timer"
                 :time="timer.intervalResolve"
                 :startValue="timer.value"
-                size="100"
-                color="black"
+                size="90"
+                color="white"
                 v-on:timer-end="$emit('timer-end')"
             />
         </v-flex>
@@ -34,7 +35,7 @@ export default {
     components: {
         Timer,
     },
-    props: ['timer', 'player', 'move'],
+    props: ['timer', 'player', 'move', 'us'],
     data: () => ({
         IndexToPlayer,
         IndexToMoves,

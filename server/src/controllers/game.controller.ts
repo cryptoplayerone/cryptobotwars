@@ -20,7 +20,9 @@ import {Game, Move} from '../models';
 import {GameRepository} from '../repositories';
 import {MoveController} from './move.controller';
 import {Raiden} from './raiden.controller';
-import {RaidenDataSource} from '../datasources';
+import {Robot} from './robot.controller';
+import {RaidenDataSource, RobotDataSource} from '../datasources';
+import {IndexToPlayer} from '../constants';
 
 import RockPaperScissorsWinner from '../rpsWinner';
 
@@ -186,6 +188,7 @@ export class GameController {
         move1,
         move2,
         amount: winner_amount,
+        amountGuardian: guardian_amount,
         players: moves.length,
     };
     console.log('--gameUpdate', gameUpdate);
@@ -197,6 +200,8 @@ export class GameController {
             this.sendRaidenPayment(token, move.userAddress, move.amount, move.paymentIdentifier);
         }
     });
+
+    this.sendRobotCommands(move1, move2, winningMove);
 
     return game;
   }
@@ -272,5 +277,74 @@ export class GameController {
     'controllers.Raiden',
     );
     return await raiden.raiden.pay(token, target, amount, identifier);
+  }
+
+  async sendRobotCommand(command: string): Promise<any> {
+    const context: Context = new Context();
+    context.bind('datasources.robot').to(RobotDataSource);
+    context.bind('controllers.Robot').toClass(Robot);
+    const robot = await context.get<Robot>(
+    'controllers.Robot',
+    );
+    return await robot.robot[command]();
+  }
+
+  async sendRobotCommands(
+      move1: string,
+      move2: string,
+      winningMove: string,
+  ): Promise<any> {
+    let lose_command: string, win_command: string;
+    let winner: string, win_wait: number;
+
+    // TODO: check if connected, otherwise connect
+
+    if (move1 === winningMove) {
+        win_command = `${IndexToPlayer[1]}_wins`;
+        lose_command = `${IndexToPlayer[2]}_loses`;
+        win_wait = 10600; // 6630;
+        winner = IndexToPlayer[1];
+    } else {
+        win_command = `${IndexToPlayer[2]}_wins`;
+        lose_command = `${IndexToPlayer[1]}_loses`;
+        win_wait = 6610;
+        winner = IndexToPlayer[2];
+    }
+
+    console.log('player1, player2', IndexToPlayer[1], IndexToPlayer[2]);
+    console.log('move1, move2, winningMove, winner', move1, move2, winningMove, winner);
+
+    return await this.wait(2000).then(() => {
+        this.sendRobotCommand(`${IndexToPlayer[1]}_${move1}`)
+    }).then(() => {
+        return this.wait(2500);
+    }).then(() => {
+        return this.sendRobotCommand(`${IndexToPlayer[2]}_${move2}`);
+    }).then(() => {
+        return this.wait(2500);
+    }).then(() => {
+        return this.sendRobotCommand(lose_command);
+    }).then(() => {
+        return this.wait(4000);
+    }).then(() => {
+        return this.sendRobotCommand(win_command);
+    }).then(() => {
+        return this.wait(win_wait);
+    }).then(() => {
+        console.log(`${winner}_stop`);
+        return this.sendRobotCommand(`${winner}_stop`);
+    });
+    // .then(() => {
+    //     this.sendRobotCommand(`${IndexToPlayer[1]}_stage`);
+    //     this.sendRobotCommand(`${IndexToPlayer[2]}_stage`);
+    // });
+  }
+
+  async wait(timeout: number): Promise<any> {
+      return new Promise((resolve, reject) => {
+          setTimeout(function() {
+              resolve();
+          }, timeout);
+      });
   }
 }

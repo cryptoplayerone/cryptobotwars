@@ -1,10 +1,8 @@
 <template>
     <swiper ref="mySwiper" :options="swiperOptions">
         <swiper-slide class="swiper-margin no-swipe">
-            <v-container fill-height>
-                <v-layout>
+            <v-container>
                     <StartPage v-on:go="nextSlide()"/>
-                </v-layout>
             </v-container>
         </swiper-slide>
         <swiper-slide class="swiper-margin no-swipe">
@@ -12,6 +10,8 @@
                 <v-flex xs12>
                     <GameOpen
                         :timer="timer"
+                        :player="player"
+                        :move="move"
                         v-on:player-chosen="setPlayer"
                         v-on:move-chosen="setMove"
                         v-on:play="userPlay"
@@ -27,10 +27,28 @@
                 :timer="timer"
                 :player="player"
                 :move="move"
+                :raiden_payment="raiden_payment"
                 :winningPayment="winningPayment"
                 v-on:timer-end="resolveTimerEnd"
                 v-on:restart-game="restartGame()"
             />
+        </swiper-slide>
+        <swiper-slide class="swiper-margin no-swipe">
+            <v-layout text-xs-center wrap fullheight>
+                <v-flex xs8>
+                    <RobotLive/>
+                </v-flex>
+                <v-flex xs4>
+                    <GameClosed
+                        v-if="game"
+                        :game="game"
+                        :player="player"
+                        :move="move"
+                        :winningPayment="winningPayment"
+                        v-on:restart-game="restartGame()"
+                    />
+                </v-flex>
+            </v-layout>
         </swiper-slide>
 
         <!-- <v-btn absolute small top left fab
@@ -61,6 +79,7 @@ import StartPage from './StartPage';
 import GameOpen from './GameOpen';
 import GameClosed from './GameClosed';
 import GameEnd from './GameEnd';
+import RobotLive from './RobotLive';
 import { MovesToIndex, IndexToMoves, GameGuardian, GameState, GameStateIndex, Network } from '../constants';
 import { UserRaidenApi, GuardianApi } from '../utils';
 
@@ -76,6 +95,7 @@ export default {
         GameOpen,
         GameClosed,
         GameEnd,
+        RobotLive,
     },
     data() {
         return {
@@ -114,6 +134,11 @@ export default {
         userInfo() {
             this.setUserRaidenApi();
         },
+        game() {
+            if (this.game && this.game.winningMove) {
+                this.swiper.slideTo(3, 1000, false);
+            }
+        },
     },
     mounted() {
         this.setUserRaidenApi();
@@ -144,17 +169,17 @@ export default {
                     this.$emit('needs-info');
                     return;
                 }
-                this.setCurrentGame().then(() => {
-                    if (this.gameState == GameState.resolved) {
+                this.setCurrentGame().then(({ game, gameState, wait }) => {
+                    if (gameState == GameState.resolved) {
                         console.log('gameState resolved, starting new game');
                         return this.startGame();
                     }
                     return;
                 }).then(() => {
                     return this.setCurrentGame();
-                }).then(() => {
-                    if (this.gameState == GameState.closed) {
-                        alert(`wait for results on previous game: ${Math.floor(this.wait / 1000)} sec`);
+                }).then(({ game, gameState, wait }) => {
+                    if (gameState == GameState.closed) {
+                        alert(`wait for results on previous game: ${Math.floor(wait / 1000)} sec`);
                     } else {
                         this.swiper.slideNext(1000, false);
                     }
@@ -225,33 +250,41 @@ export default {
         },
         setCurrentGame() {
             return this.guardianApi.getGame().then((response) => {
-                let deltaTime;
+                let deltaTime, gameState, wait;
                 const game = response.data[0];
-                this.game = game;
 
                 deltaTime = new Date().getTime() - new Date(game.startTime).getTime();
-                this.timer.intervalGame = game.gameTime;
-                this.timer.intervalResolve = game.gameTime + game.resolveTime;
-                this.timer.value = new Date(game.startTime).getTime();
 
                 console.log('setCurrentGame', game);
                 console.log('this.timer', this.timer);
 
                 if (deltaTime < game.gameTime) {
                     // We are during game time, users can make moves
-                    this.gameState = GameState.open;
+                    gameState = GameState.open;
                 } else if (deltaTime < (game.gameTime + game.resolveTime)) {
                     // We are during the game resolution time, users wait for results and payments
-                    this.gameState = GameState.closed;
-                    this.wait = this.timer.intervalResolve - deltaTime;
-                    console.log('wait', this.wait);
+                    gameState = GameState.closed;
+                    wait = this.timer.intervalResolve - deltaTime;
+                    console.log('wait', wait);
                 } else {
                     // Game and resolution has ended.
                     // We query for a new game
                     // setTimeout(this.setCurrentGame, 2000);
-                    this.gameState = GameState.resolved;
+                    gameState = GameState.resolved;
                 }
-                console.log('gameState', GameStateIndex[this.gameState]);
+
+                if (gameState == GameState.open) {
+                    this.game = game;
+                    this.timer.intervalGame = game.gameTime;
+                    this.timer.intervalResolve = game.gameTime + game.resolveTime;
+                    this.timer.value = new Date(game.startTime).getTime();
+                    this.gameState = gameState;
+                    this.wait = wait;
+                    console.log('gameState', GameStateIndex[this.gameState]);
+                }
+
+                return { game, gameState, wait };
+
             });
         },
         startGame() {
@@ -315,7 +348,11 @@ export default {
                 const lastPaymentReceived = payments.pop();
                 console.log('lastPaymentReceived', lastPaymentReceived);
                 console.log('this.raiden_payment', this.raiden_payment);
-                if (lastPaymentReceived && lastPaymentReceived.identifier === this.raiden_payment.identifier) {
+                if (
+                    lastPaymentReceived &&
+                    this.raiden_payment &&
+                    lastPaymentReceived.identifier === this.raiden_payment.identifier
+                ) {
                     this.winningPayment = lastPaymentReceived;
                     console.log('winningPayment set');
                 }
