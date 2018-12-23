@@ -1,7 +1,10 @@
 export const GameState = {
     null: 0,
+    // We are during game time, users can make moves
     open: 1,
+    // We are during the game resolution time, users wait for results and payments
     closed: 2,
+    // Game and resolution has ended.
     resolved: 3,
 }
 

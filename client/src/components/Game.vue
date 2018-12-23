@@ -282,7 +282,7 @@ export default {
         },
         setCurrentGame() {
             return this.guardianApi.getGame().then((response) => {
-                let deltaTime, gameState, wait;
+                let deltaTime, gameState, wait, intervalResolve;
                 const game = response.data[0];
 
                 deltaTime = new Date().getTime() - new Date(game.startTime).getTime();
@@ -291,24 +291,19 @@ export default {
                 console.log('this.timer', this.timer);
 
                 if (deltaTime < game.gameTime) {
-                    // We are during game time, users can make moves
                     gameState = GameState.open;
                 } else if (deltaTime < (game.gameTime + game.resolveTime)) {
-                    // We are during the game resolution time, users wait for results and payments
                     gameState = GameState.closed;
-                    wait = this.timer.intervalResolve - deltaTime;
-                    console.log('wait', wait);
+                    intervalResolve = game.gameTime + game.resolveTime;
+                    wait = intervalResolve - deltaTime;
                 } else {
-                    // Game and resolution has ended.
-                    // We query for a new game
-                    // setTimeout(this.setCurrentGame, 2000);
                     gameState = GameState.resolved;
                 }
 
                 if (gameState == GameState.open) {
                     this.game = game;
                     this.timer.intervalGame = game.gameTime;
-                    this.timer.intervalResolve = game.gameTime + game.resolveTime;
+                    this.timer.intervalResolve = intervalResolve;
                     this.timer.value = new Date(game.startTime).getTime();
                     this.gameState = gameState;
                     this.wait = wait;
