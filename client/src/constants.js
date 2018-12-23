@@ -36,6 +36,7 @@ export const IndexToMoves = {
 
 export const GameGuardian = {
     host: process.env.VUE_APP_GUARDIAN_HOST,
+    stream: process.env.VUE_APP_LIVESTREAM,
     raiden_address: {
         1: process.env.VUE_APP_GUARDIAN_RAIDEN_ADDRESS_MAINNET,
         3: process.env.VUE_APP_GUARDIAN_RAIDEN_ADDRESS_ROPSTEN,

@@ -36,7 +36,9 @@
         <swiper-slide class="swiper-margin no-swipe">
             <v-layout text-xs-center wrap fullheight>
                 <v-flex xs8>
-                    <RobotLive/>
+                    <RobotLive
+                        :stream="stream"
+                    />
                 </v-flex>
                 <v-flex xs4>
                     <GameClosed
@@ -114,6 +116,7 @@ export default {
                 Vue.axios,
                 GameGuardian.host,
             ),
+            stream: GameGuardian.stream,
             player: null,
             game: null,
             gameState: GameState.null,
