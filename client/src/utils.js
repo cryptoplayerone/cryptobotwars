@@ -35,6 +35,11 @@ export class GuardianApi {
         return this.axios.get(api);
     }
 
+    getGameMoveCount(gameId, playerId) {
+        const api = `${this.ip}/move/count?where={"gameId":${gameId},"playerId":${playerId}}`;
+        return this.axios.get(api);
+    }
+
     startGame() {
         const api = `${this.ip}/game`;
         return this.axios.post(api, {});

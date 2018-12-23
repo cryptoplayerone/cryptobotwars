@@ -12,6 +12,8 @@
                         :timer="timer"
                         :player="player"
                         :move="move"
+                        :players1="players1"
+                        :players2="players2"
                         v-on:player-chosen="setPlayer"
                         v-on:move-chosen="setMove"
                         v-on:play="userPlay"
@@ -126,6 +128,8 @@ export default {
             winningPayment: null,
             moveStarted: null,
             secret: null,
+            players1: 0,
+            players2: 0,
         }
     },
     computed: {
@@ -160,12 +164,27 @@ export default {
         },
         goToOpenState() {
             this.swiper.slideTo(1, 1000, false);
+            this.setPlayersMoveCount();
         },
         goToCloseState() {
             this.swiper.slideTo(2, 1000, false);
         },
         goToResolvedState() {
             this.swiper.slideTo(3, 1000, false);
+        },
+        setPlayersMoveCount() {
+            let intervalID = setInterval(() => {
+                if (this.swiper.realIndex != GameState.open) {
+                    clearInterval(intervalID);
+                    return;
+                }
+                this.guardianApi.getGameMoveCount(this.game._id, 1).then((response) => {
+                    this.players1 = response.data.count;
+                });
+                this.guardianApi.getGameMoveCount(this.game._id, 2).then((response) => {
+                    this.players2 = response.data.count;
+                });
+            }, 3000);
         },
         tryGoToOpenState() {
             console.log('this.userInfo', this.userInfo);
@@ -311,7 +330,7 @@ export default {
                 this.restartGame();
             } else {
                 // Just in case the next step slide did not work after the payment was made
-                if (this.swiper.realIndex == 1) {
+                if (this.swiper.realIndex == GameState.open) {
                     this.goToCloseState();
                 }
                 // Send the move data to the guardian server

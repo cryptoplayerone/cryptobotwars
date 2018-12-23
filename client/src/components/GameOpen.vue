@@ -14,6 +14,17 @@
             <v-flex xs12>
                 <div class="display-1">Choose:</div>
             </v-flex>
+            <v-flex xs2 offset-xs4>
+                <p class="subheading" text-xs-center wrap>
+                    players now: {{players1}}
+                </p>
+            </v-flex>
+            <v-flex xs2>
+                <p class="subheading" text-xs-center wrap>
+                    players now: {{players2}}
+                </p>
+            </v-flex>
+            <v-flex xs4></v-flex>
             <v-flex xs12>
                 <v-avatar class="v-btn v-btn--depressed theme--light v-btn--floating"
                     :size="120"
@@ -80,7 +91,7 @@ import { MovesToIndex, PlayerToIndex, GameGuardian } from '../constants';
 import Timer from './Timer';
 
 export default {
-    props: ['timer', 'player', 'move'],
+    props: ['timer', 'player', 'move', 'players1', 'players2'],
     components: {
         Timer,
     },
