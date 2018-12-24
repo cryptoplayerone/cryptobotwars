@@ -39,6 +39,7 @@
             <v-layout text-xs-center wrap fullheight>
                 <v-flex xs8>
                     <RobotLive
+                        v-if="game && game.winningMove"
                         :stream="stream"
                     />
                 </v-flex>
@@ -91,7 +92,6 @@ Vue.use(VueAwesomeSwiper);
 
 const web3Utils = require('web3-utils');
 
-
 export default {
     props: ['userInfo'],
     components: {
@@ -118,10 +118,10 @@ export default {
                 Vue.axios,
                 GameGuardian.host,
             ),
+            GameState,
             stream: GameGuardian.stream,
             player: null,
             game: null,
-            gameState: GameState.null,
             move: null,
             timer: {intervalGame: 0, intervalResolve: 0, value: 0},
             raiden_payment: null,
@@ -163,14 +163,14 @@ export default {
             this.swiper.slideTo(0, 1000, false);
         },
         goToOpenState() {
-            this.swiper.slideTo(1, 1000, false);
+            this.swiper.slideTo(GameState.open, 1000, false);
             this.setPlayersMoveCount();
         },
         goToCloseState() {
-            this.swiper.slideTo(2, 1000, false);
+            this.swiper.slideTo(GameState.closed, 1000, false);
         },
         goToResolvedState() {
-            this.swiper.slideTo(3, 1000, false);
+            this.swiper.slideTo(GameState.resolved, 1000, false);
         },
         setPlayersMoveCount() {
             let intervalID = setInterval(() => {
@@ -303,9 +303,8 @@ export default {
                     this.timer.intervalGame = game.gameTime;
                     this.timer.intervalResolve = game.gameTime + game.resolveTime;
                     this.timer.value = new Date(game.startTime).getTime();
-                    this.gameState = gameState;
-                    console.log('gameState', GameStateIndex[this.gameState]);
                     this.wait = this.timer.intervalResolve - deltaTime;
+                    console.log('gameState', GameStateIndex[gameState]);
                 }
 
                 return { game, gameState, wait: this.wait };
