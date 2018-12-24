@@ -24,7 +24,7 @@ import {Robot} from './robot.controller';
 import {RaidenDataSource, RobotDataSource} from '../datasources';
 import {IndexToPlayer} from '../constants';
 
-import RockPaperScissorsWinner from '../rpsWinner';
+import {RockPaperScissorsGetLoser} from '../rpsWinner';
 
 export class GameController {
   constructor(
@@ -175,9 +175,14 @@ export class GameController {
     console.log('sorted_moves_1', sorted_moves_1);
     console.log('sorted_moves_2', sorted_moves_2);
 
-    move1 = sorted_moves_1[2][0];
-    move2 = sorted_moves_2[2][0];
-    winningMove = RockPaperScissorsWinner[move1] == move2 ? move1 : move2;
+    move1 = sorted_moves_1[2][1] > 0 ? sorted_moves_1[2][0] : null;
+    move2 = sorted_moves_2[2][1] > 0 ? sorted_moves_2[2][0] : RockPaperScissorsGetLoser[move1];
+
+    // If we have one player, make sure he wins
+    if (!move1) {
+        move1 = RockPaperScissorsGetLoser[move2];
+    }
+    winningMove = RockPaperScissorsGetLoser[move1] === move2 ? move1 : move2;
 
     guardian_amount = total_amount / 10;
     total_amount -= guardian_amount;

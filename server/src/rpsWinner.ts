@@ -2,9 +2,14 @@ interface RPSW {
     [key:string]: string;
 }
 
-const RockPaperScissorsWinner: RPSW = {
+export const RockPaperScissorsGetLoser: RPSW = {
     rock: 'scissors',
     paper: 'rock',
     scissors: 'paper',
 }
-export default RockPaperScissorsWinner;
+
+export const RockPaperScissorsGetWinner: RPSW = {
+    rock: 'paper',
+    paper: 'scissors',
+    scissors: 'rock',
+}
