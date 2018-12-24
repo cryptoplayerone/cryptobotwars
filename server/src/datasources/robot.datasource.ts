@@ -1,7 +1,8 @@
 import {juggler} from '@loopback/service-proxy';
+import {ExternalHosts} from '../constants';
 
-const VaderHost = 'http://127.0.0.1:8000';
-const YodaHost = 'http://127.0.0.1:8100';
+const VaderHost = ExternalHosts.vader;
+const YodaHost = ExternalHosts.yoda;
 
 export const RobotDataSource: juggler.DataSource = new juggler.DataSource({
   name: 'Robot',
