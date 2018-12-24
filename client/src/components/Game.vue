@@ -9,6 +9,7 @@
             <v-layout text-xs-center wrap>
                 <v-flex xs12>
                     <GameOpen
+                        v-if="game"
                         :timer="timer"
                         :player="player"
                         :move="move"
@@ -102,7 +103,7 @@ export default {
         RobotLive,
     },
     data() {
-        return {
+        let data = {
             swiperOptions: {
                 noSwiping: true,
                 navigation: {
@@ -120,17 +121,10 @@ export default {
             ),
             GameState,
             stream: GameGuardian.stream,
-            player: null,
-            game: null,
-            move: null,
             timer: {intervalGame: 0, intervalResolve: 0, value: 0},
-            raiden_payment: null,
-            winningPayment: null,
-            moveStarted: null,
-            secret: null,
-            players1: 0,
-            players2: 0,
         }
+        this.resetGameData(data);
+        return data;
     },
     computed: {
         swiper() {
@@ -151,6 +145,17 @@ export default {
         this.setUserRaidenApi();
     },
     methods: {
+        resetGameData(self) {
+            self.game = null;
+            self.raiden_payment = null;
+            self.winningPayment = null;
+            self.player = null;
+            self.move = null;
+            self.moveStarted = null;
+            self.secret = null;
+            self.players1 = 0;
+            self.players2 = 0;
+        },
         setUserRaidenApi() {
             this.userRaidenApi = new UserRaidenApi(
                 Vue.axios,
@@ -188,13 +193,7 @@ export default {
         },
         tryGoToOpenState() {
             console.log('this.userInfo', this.userInfo);
-            this.game = null;
-            this.raiden_payment = null;
-            this.winningPayment = null;
-            this.player = null;
-            this.move = null;
-            this.moveStarted = null;
-            this.secret = null;
+            this.resetGameData(this);
             if (!this.userInfo.address || !this.userInfo.ip) {
                 this.$emit('needs-info');
                 return;
