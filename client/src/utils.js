@@ -7,19 +7,19 @@ export class UserRaidenApi {
     }
 
     pay(payload) {
-        const api = `${this.ip}/api/1/payments/${this.token}/${this.target}`;
+        const api = `${this.ip}/api/v1/payments/${this.token}/${this.target}`;
         console.log('pay', api, payload);
         return this.axios.post(api, payload);
     }
 
     history(fromBlock=0) {
-        const api =  `${this.ip}/api/1/events/channels/${this.token}/${this.target}?from_block=${fromBlock}`;
+        const api =  `${this.ip}/api/v1/events/channels/${this.token}/${this.target}?from_block=${fromBlock}`;
         console.log('history', api);
         return this.axios.get(api);
     }
 
     payments() {
-        const api = `${this.ip}/api/1/payments/${this.token}`;
+        const api = `${this.ip}/api/v1/payments/${this.token}`;
         return this.axios.get(api);
     }
 }
