@@ -40,9 +40,12 @@
             <v-layout text-xs-center wrap fullheight>
                 <v-flex xs8>
                     <RobotLive
-                        v-if="game && game.winningMove"
                         :stream="stream"
                     />
+                    <!-- <RobotLive
+                        v-if="game"
+                        :stream="stream + (gameRevealed ? '&muted=false' : '&muted=true')"
+                    /> -->
                 </v-flex>
                 <v-flex xs4>
                     <GameClosed
@@ -155,6 +158,7 @@ export default {
             self.secret = null;
             self.players1 = 0;
             self.players2 = 0;
+            self.gameRevealed = false;
         },
         setUserRaidenApi() {
             this.userRaidenApi = new UserRaidenApi(
@@ -347,6 +351,7 @@ export default {
                         return;
                     }
                     this.game = game;
+                    this.gameRevealed = true;
 
                     if (IndexToMoves[this.move] === game.winningMove) {
                         this.tryGetWinningPayment();
