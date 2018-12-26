@@ -151,7 +151,9 @@ export class GameController {
         return game;
     }
 
-    raidenPayments = await this.getRaidenPayments(TOKEN);
+    raidenPayments = await this.getRaidenPayments(TOKEN).catch((error) => {
+        console.log(error);
+    });
     for (let i = 0; i < moves.length; i++) {
         let sentMove: Move = moves[i];
 
@@ -205,11 +207,15 @@ export class GameController {
     // Make Raiden payments to winners
     winningMoves.forEach((move: Move) => {
         if (move.move && move.amount && move.move === winningMove) {
-            this.sendRaidenPayment(TOKEN, move.userAddress, move.amount, move.paymentIdentifier);
+            this.sendRaidenPayment(TOKEN, move.userAddress, move.amount, move.paymentIdentifier).catch((error) => {
+                console.log(error);
+            });
         }
     });
 
-    this.sendRobotCommands(move1, move2, winningMove);
+    this.sendRobotCommands(move1, move2, winningMove).catch((error) => {
+        console.log(error);
+    });
 
     return game;
   }
