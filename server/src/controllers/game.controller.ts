@@ -108,7 +108,7 @@ export class GameController {
     // calculate
     // send Raiden payments to all winners
     let game: Game;
-    let currentTime, resolveTime;
+    let currentTime, resolveTime, deltaTime;
     let moves: Move[], winningMoves: Move[] = [];
     let moveController;
     let total_amount: number = 0, winner_amount: number, guardian_amount: number;
@@ -131,9 +131,15 @@ export class GameController {
 
     game = await this.gameRepository.findById(id);
     currentTime = new Date().getTime();
-    resolveTime = game.startTime.getTime() + game.gameTime + game.resolveTime;
+    deltaTime = game.gameTime + game.resolveTime;
+    resolveTime = game.startTime.getTime() + deltaTime;
 
-    if (game.winningMove || game.inProgress || currentTime < resolveTime) {
+    if (
+        game.winningMove ||
+        game.inProgress ||
+        currentTime < resolveTime ||
+        currentTime > resolveTime + deltaTime
+    ) {
         return game;
     }
 
