@@ -1,7 +1,7 @@
 import {juggler} from '@loopback/service-proxy';
 import {ExternalHosts} from '../constants';
 
-const RaidenHost = ExternalHosts.raiden;
+const RaidenApi = `${ExternalHosts.raiden}/api/v1`;
 
 export const RaidenDataSource: juggler.DataSource = new juggler.DataSource({
   name: 'Raiden',
@@ -16,7 +16,7 @@ export const RaidenDataSource: juggler.DataSource = new juggler.DataSource({
     {
       template: {
         method: 'GET',
-        url: `${RaidenHost}/api/1/payments/{token}`,
+        url: `${RaidenApi}/payments/{token}`,
         responsePath: '$',
       },
       functions: {
@@ -26,7 +26,7 @@ export const RaidenDataSource: juggler.DataSource = new juggler.DataSource({
     {
       template: {
         method: 'POST',
-        url: `${RaidenHost}/api/1/payments/{token}/{target}`,
+        url: `${RaidenApi}/payments/{token}/{target}`,
         body: {
           amount: "{amount:number}",
           identifier: "{identifier:number}"
