@@ -21,24 +21,27 @@
 
             <v-card-text>
                 <p class="display-1">About</p>
-                <p>You choose a player and a move (rock, paper or scissors). The web app sends your move data (hashed) to the Game Guardian, and triggers an off-chain payment with your Raiden node to the Game Guardian address.</p>
+                <a href="https://github.com/cryptoplayerone/cryptobotwars" target="_blank">Github</a>
+                <p>You choose a player and a move (rock, paper or scissors). The Game Client (web app) sends your encrypted move data to the Game Guardian, and triggers an off-chain payment on your behalf, from your Raiden node to the Game Guardian address: <a :href="'https://etherscan.io/address/' + gameAddresses.guardian" target="_blank"><span class="font-weight-black">{{gameAddresses.guardian}}</span></a>.</p>
+                <p>The game uses the following token: <a :href="'https://etherscan.io/address/' + gameAddresses.token" target="_blank"><span class="font-weight-black">{{gameAddresses.token}}</span></a>.</p>
 
                 <p>After the game round ends, the web app sends the actual move data. The Game Guardian then calculates how many tokens it has received for the round, keeps 10% and then distributes the rest to all players that sent the winning move.</p>
 
                 <p class="display-1">How to play</p>
-                <p>To play the game, you need to run a Raiden node on Kovan. Check out <a href="https://raiden-network.readthedocs.io/en/stable/" target="_blank">https://raiden-network.readthedocs.io/en/stable/</a> for details.</p>
+                <p>To play the game, you need to run a Raiden node on Mainnet. It only works with the <a href="https://github.com/raiden-network/raiden/releases/tag/v0.100.1" target="_blank">Red Eyes release</a>. Check out the <a href="https://raiden-network.readthedocs.io/en/stable/" target="_blank">Raiden Installation Guide</a> for details.</p>
 
-                <p>You need to set the "--rpccorsdomain" flag to the game's domain. This will give access to the game to make payments on your behalf when choosing a move.</p>
+                <p>You need to set the <span class="font-weight-black">--rpccorsdomain</span> flag to the game's domain.</p>
+                <p class="red">This <span class="font-weight-black">will</span> give access to the game to make payments <span class="font-weight-black">on your behalf</span> when choosing a move. Do not deposit more tokens than you are willing to lose.</p>
 
                 <p>Example:</p>
                 <v-textarea
                     solo
                     name="input-7-1"
-                    value='raiden --network-id kovan --environment-type development --accept-disclaimer --gas-price 20000000000  --eth-rpc-endpoint "https://ropsten.infura.io/v3/<YOUR_TOKEN>" --log-config "raiden:debug" --keystore-path ~/Library/Ethereum/kovan/keystore --rpccorsdomain http://127.0.0.1:8080,http://localhost:*/* --api-address http://127.0.0.1:5001'
+                    value='raiden-v0.100.1 --accept-disclaimer --eth-rpc-endpoint https://mainnet.infura.io/v3/[YOUR_TOKEN] --keystore-path ~/Library/Ethereum/keystore --rpc --rpccorsdomain http://127.0.0.1:*/*,http://cryptoplayer.one:*/* --api-address http://127.0.0.1:5001 --address [YOUR_ETHEREUM_ADDRESS]'
                 ></v-textarea>
 
                 <p class="display-1">Settings</p>
-                <p>To play the game, you need to provide your Raiden node info.</p>
+                <p>To play the game, you need to provide your Raiden node info: the <span class="font-weight-black">--address</span> and <span class="font-weight-black">--api-address</span>.</p>
                 <v-form v-model="valid">
                     <v-text-field
                         v-model="address"
@@ -64,8 +67,9 @@
                 </v-form>
                 </br>
                 <p class="display-1">Disclaimer</p>
-                <p>This is experimental software, use it at your own risk. Only available on Ropsten.</p>
-                <p>This project is built on top of Raiden Network, but it is an effort external to the Raiden Network project.</p>
+                <p>This is experimental software running on the Mainnet. Use it at your own risk if you want to give a hand at testing the game and the Bug Bounty Raiden Network release.</p>
+                <p>This project is built on top of Raiden Network, but it is an effort external to the Raiden Network project. Any issues encountered with the game should be directed to our <a href="https://github.com/cryptoplayerone/cryptobotwars/issues" target="_blank">Github Issue Tracker</a>.</p>
+                <p>Any issues encountered with Raiden, should be directed to the Raiden project.</p>
             </v-card-text>
 
             <v-divider></v-divider>
@@ -86,7 +90,7 @@
 
 <script>
 export default {
-    props: ['infoRequired', 'userInfo'],
+    props: ['infoRequired', 'userInfo', 'gameAddresses'],
     data() {
         return {
             dialog: false,
