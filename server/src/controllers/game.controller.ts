@@ -22,7 +22,7 @@ import {MoveController} from './move.controller';
 import {Raiden} from './raiden.controller';
 import {Robot} from './robot.controller';
 import {RaidenDataSource, RobotDataSource} from '../datasources';
-import {IndexToPlayer} from '../constants';
+import {IndexToPlayer, TOKEN} from '../constants';
 
 import {RockPaperScissorsGetLoser} from '../rpsWinner';
 
@@ -129,9 +129,6 @@ export class GameController {
     let gameUpdate: Partial<Game>;
     let raidenPayment: any, raidenPayments: any;
 
-    // TODO - token should be in the move model
-    const token = '0x98a345f06e3A5DFe28EE0af38dd0780b4C0ed73B';
-
     game = await this.gameRepository.findById(id);
     currentTime = new Date().getTime();
     resolveTime = game.startTime.getTime() + game.gameTime + game.resolveTime;
@@ -148,7 +145,7 @@ export class GameController {
         return game;
     }
 
-    raidenPayments = await this.getRaidenPayments(token);
+    raidenPayments = await this.getRaidenPayments(TOKEN);
     for (let i = 0; i < moves.length; i++) {
         let sentMove: Move = moves[i];
 
@@ -202,7 +199,7 @@ export class GameController {
     // Make Raiden payments to winners
     winningMoves.forEach((move: Move) => {
         if (move.move && move.amount && move.move === winningMove) {
-            this.sendRaidenPayment(token, move.userAddress, move.amount, move.paymentIdentifier);
+            this.sendRaidenPayment(TOKEN, move.userAddress, move.amount, move.paymentIdentifier);
         }
     });
 
