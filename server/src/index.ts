@@ -1,5 +1,6 @@
 import {CryptowarsApplication} from './application';
 import {ApplicationConfig} from '@loopback/core';
+import {CORS} from './constants';
 
 export {CryptowarsApplication};
 
@@ -9,6 +10,7 @@ export async function main(options: ApplicationConfig = {}) {
             apiExplorer: {
                 disabled: true,
             },
+        cors: CORS,
         }
     });
     await app.boot();
