@@ -332,26 +332,40 @@ export class GameController {
     return await robot.robot[command]();
   }
 
+  async sendRobotWins(player: string, timeout: number): Promise<any> {
+    return this.sendRobotCommand(`${player}_wins`).then(() => {
+        return this.wait(timeout);
+    }).then(() => {
+        console.log(`${player}_stop`);
+        return this.sendRobotCommand(`${player}_stop`);
+    });
+  }
+
+  async sendRobotLoses(player: string, timeout: number): Promise<any> {
+    return this.sendRobotCommand(`${player}_loses`).then(() => {
+        return this.wait(timeout);
+    });
+  }
+
   async sendRobotCommands(
       move1: string,
       move2: string,
       winningMove: string,
   ): Promise<any> {
-    let lose_command: string, win_command: string;
-    let winner: string, win_wait: number;
+    let winner: string, loser: string, win_wait: number, lose_wait: number;
+    let player1_win_wait: number = 10800;
+    let player2_win_wait: number = 6610;
 
     // TODO: check if connected, otherwise connect
-
+    lose_wait = 4000;
     if (move1 === winningMove) {
-        win_command = `${IndexToPlayer[1]}_wins`;
-        lose_command = `${IndexToPlayer[2]}_loses`;
-        win_wait = 10800; // 6630;
         winner = IndexToPlayer[1];
+        loser = IndexToPlayer[2];
+        win_wait = player1_win_wait;
     } else {
-        win_command = `${IndexToPlayer[2]}_wins`;
-        lose_command = `${IndexToPlayer[1]}_loses`;
-        win_wait = 6610;
         winner = IndexToPlayer[2];
+        loser = IndexToPlayer[1];
+        win_wait = player2_win_wait;
     }
 
     return await this.wait(2000).then(() => {
@@ -363,22 +377,19 @@ export class GameController {
     }).then(() => {
         return this.wait(2500);
     }).then(() => {
-        return this.sendRobotCommand(lose_command);
+        if (move1 === move2) {
+            return this.sendRobotWins(loser, player2_win_wait);
+        } else {
+            return this.sendRobotLoses(loser, lose_wait);
+        }
     }).then(() => {
-        return this.wait(4000);
-    }).then(() => {
-        return this.sendRobotCommand(win_command);
-    }).then(() => {
-        return this.wait(win_wait);
-    }).then(() => {
-        console.log(`${winner}_stop`);
-        return this.sendRobotCommand(`${winner}_stop`);
+        return this.sendRobotWins(winner, win_wait);
     }).then(() => {
         return this.wait(1000);
     }).then(() => {
-        return this.sendRobotCommand('vader_stage');
+        return this.sendRobotCommand(`${IndexToPlayer[1]}_stage`);
     }).then(() => {
-        return this.sendRobotCommand('yoda_stage');
+        return this.sendRobotCommand(`${IndexToPlayer[2]}_stage`);
     }).catch((error) => {
         console.log(error);
     });
