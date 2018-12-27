@@ -22,10 +22,12 @@
             <v-card-text>
                 <p class="display-1">About</p>
                 <a href="https://github.com/cryptoplayerone/cryptobotwars" target="_blank">Github</a>
+                <p>Can be played by an unlimited number of simultaneous users, who choose between the game's two players. There is only 1 game playing at any point in time. You might have to wait for the current game to conclude before being able to play.</p>
                 <p>You choose a player and a move (rock, paper or scissors). The Game Client (web app) sends your encrypted move data to the Game Guardian, and triggers an off-chain payment of <span class="font-weight-black">{{parseFloat(gameAddresses.amount / 10**18).toFixed(18)}} WETH</span> on your behalf, from your Raiden node to the Game Guardian address: <a :href="'https://etherscan.io/address/' + gameAddresses.guardian" target="_blank"><span class="font-weight-black">{{gameAddresses.guardian}}</span></a>.</p>
                 <p>The game uses the following token: <a :href="'https://etherscan.io/address/' + gameAddresses.token" target="_blank"><span class="font-weight-black">{{gameAddresses.token}}</span></a>.</p>
 
-                <p>After the game round ends, the web app sends the actual move data. The Game Guardian then calculates how many tokens it has received for the round, keeps 10% and then distributes the rest to all players that sent the winning move.</p>
+                <p>After the game round ends, the web app sends the actual move data. The Game Guardian then choses each player's move based on how the majority voted and choses the winning move & player based on the known rock-paper-scissors rules. It calculates how many tokens it has received for the game, keeps 10% (Robots also want crypto) and then distributes the rest to all players that sent the winning move & player.</p>
+                <p>At the end, <span class="font-weight-black black" > Dark Vader</span> & <span class="font-weight-black blue"> Blue Yoda</span> will act out the duel for you in a live stream (make sure your sound is on). If the live stream is not available, it means they are tired and need to sleepzzz.</p>
 
                 <p class="display-1">How to play</p>
                 <p>To play the game, you need to run a Raiden node on Mainnet. It only works with the <a href="https://github.com/raiden-network/raiden/releases/tag/v0.100.1" target="_blank">Red Eyes release</a>. Check out the <a href="https://raiden-network.readthedocs.io/en/stable/" target="_blank">Raiden Installation Guide</a> for details.</p>
