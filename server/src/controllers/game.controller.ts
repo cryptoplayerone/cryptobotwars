@@ -345,7 +345,7 @@ export class GameController {
     if (move1 === winningMove) {
         win_command = `${IndexToPlayer[1]}_wins`;
         lose_command = `${IndexToPlayer[2]}_loses`;
-        win_wait = 10820; // 6630;
+        win_wait = 10800; // 6630;
         winner = IndexToPlayer[1];
     } else {
         win_command = `${IndexToPlayer[2]}_wins`;
