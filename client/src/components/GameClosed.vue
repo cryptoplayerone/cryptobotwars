@@ -24,7 +24,7 @@
                 <p class="display-2">{{ `You ${MovesToIndex[winningMove] === move ? 'won!': 'lost..'}`}}</p>
                 <p class="subheading">{{ `${game.players} players have played!`}}</p>
                 <p class="subheading" v-if="MovesToIndex[winningMove] === move">
-                    {{`You should receive ${parseFloat(game.amount / 10**18).toFixed(13)} WETH`}}
+                    {{`You should receive ${parseFloat(game.amount / 10**18).toFixed(18)} WETH`}}
                 </p>
             </v-flex>
             <v-flex xs12>
@@ -46,7 +46,7 @@
             <v-flex xs12 v-if="winningPayment">
                 <div v-if="MovesToIndex[winningMove] === move">
                     <p class="subheading">
-                        {{`You won ${parseFloat(game.amount / 10**18).toFixed(13)} WETH.`}}
+                        {{`You won ${parseFloat(game.amount / 10**18).toFixed(18)} WETH.`}}
                     </p>
                     <p class="subheading" text-xs-center wrap>
                         {{displayWinningPayment()}}

@@ -22,7 +22,7 @@
             <v-card-text>
                 <p class="display-1">About</p>
                 <a href="https://github.com/cryptoplayerone/cryptobotwars" target="_blank">Github</a>
-                <p>You choose a player and a move (rock, paper or scissors). The Game Client (web app) sends your encrypted move data to the Game Guardian, and triggers an off-chain payment on your behalf, from your Raiden node to the Game Guardian address: <a :href="'https://etherscan.io/address/' + gameAddresses.guardian" target="_blank"><span class="font-weight-black">{{gameAddresses.guardian}}</span></a>.</p>
+                <p>You choose a player and a move (rock, paper or scissors). The Game Client (web app) sends your encrypted move data to the Game Guardian, and triggers an off-chain payment of <span class="font-weight-black">{{parseFloat(gameAddresses.amount / 10**18).toFixed(18)}} WETH</span> on your behalf, from your Raiden node to the Game Guardian address: <a :href="'https://etherscan.io/address/' + gameAddresses.guardian" target="_blank"><span class="font-weight-black">{{gameAddresses.guardian}}</span></a>.</p>
                 <p>The game uses the following token: <a :href="'https://etherscan.io/address/' + gameAddresses.token" target="_blank"><span class="font-weight-black">{{gameAddresses.token}}</span></a>.</p>
 
                 <p>After the game round ends, the web app sends the actual move data. The Game Guardian then calculates how many tokens it has received for the round, keeps 10% and then distributes the rest to all players that sent the winning move.</p>
@@ -42,6 +42,7 @@
 
                 <p class="display-1">Settings</p>
                 <p>To play the game, you need to provide your Raiden node info: the <span class="font-weight-black">--address</span> and <span class="font-weight-black">--api-address</span>.</p>
+                <p><span class="font-weight-black red">Your Ethereum address must be checksummed!</span> E.g. <span class="font-weight-black">0xFeA60432EEb8E858364E0f8953F1386e853A7804</span> not <span class="font-weight-regular">fea60432eeb8e858364e0f8953f1386e853a7804</span></p>
                 <v-form v-model="valid">
                     <v-text-field
                         v-model="address"

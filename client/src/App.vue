@@ -33,6 +33,7 @@ export default {
             gameAddresses: {
                 token: GameGuardian.token_address[Network],
                 guardian: GameGuardian.raiden_address[Network],
+                amount: GameGuardian.amount,
             },
         }
     },

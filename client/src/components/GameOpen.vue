@@ -67,7 +67,7 @@
             </v-flex>
             <v-flex xs12>
                 </br>
-                <div class="subheading">You will pay {{parseFloat(GameGuardian.amount / 10**18).toFixed(13)}} WETH.</div>
+                <div class="subheading">You will pay {{parseFloat(GameGuardian.amount / 10**18).toFixed(18)}} WETH.</div>
             </v-flex>
             <v-flex xs12>
                 </br></br>
