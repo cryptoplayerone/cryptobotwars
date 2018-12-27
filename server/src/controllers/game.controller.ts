@@ -345,7 +345,7 @@ export class GameController {
     if (move1 === winningMove) {
         win_command = `${IndexToPlayer[1]}_wins`;
         lose_command = `${IndexToPlayer[2]}_loses`;
-        win_wait = 10650; // 6630;
+        win_wait = 10820; // 6630;
         winner = IndexToPlayer[1];
     } else {
         win_command = `${IndexToPlayer[2]}_wins`;
@@ -355,7 +355,7 @@ export class GameController {
     }
 
     return await this.wait(2000).then(() => {
-        this.sendRobotCommand(`${IndexToPlayer[1]}_${move1}`)
+        return this.sendRobotCommand(`${IndexToPlayer[1]}_${move1}`)
     }).then(() => {
         return this.wait(2500);
     }).then(() => {
@@ -373,6 +373,14 @@ export class GameController {
     }).then(() => {
         console.log(`${winner}_stop`);
         return this.sendRobotCommand(`${winner}_stop`);
+    }).then(() => {
+        return this.wait(1000);
+    }).then(() => {
+        return this.sendRobotCommand('vader_stage');
+    }).then(() => {
+        return this.sendRobotCommand('yoda_stage');
+    }).catch((error) => {
+        console.log(error);
     });
   }
 
