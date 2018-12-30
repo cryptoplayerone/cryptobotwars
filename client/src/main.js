@@ -13,6 +13,9 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import VueYouTubeEmbed from 'vue-youtube-embed'
 Vue.use(VueYouTubeEmbed)
 
+import Bars from 'vuebars';
+Vue.use(Bars);
+
 Vue.config.productionTip = false;
 
 Vue.use(VueAxios, axios);

@@ -16,7 +16,7 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {Context} from '@loopback/context';
-import {Game, Move} from '../models';
+import {Game, Move, PlayerResult} from '../models';
 import {GameRepository} from '../repositories';
 import {MoveController} from './move.controller';
 import {Raiden} from './raiden.controller';
@@ -161,7 +161,6 @@ export class GameController {
             raidenPayment = raidenPayments[0].find((payment: any) => {
                 return payment.identifier === sentMove.paymentIdentifier;
             });
-            console.log('raidenPayment', raidenPayment);
             if (raidenPayment) {
                 total_amount += sentMove.amount;
                 move_count[sentMove.playerId][sentMove.move] += 1;
@@ -195,8 +194,16 @@ export class GameController {
 
     gameUpdate = {
         winningMove,
-        move1,
-        move2,
+        player1: <PlayerResult> {
+            count: sorted_moves_1[0][1] + sorted_moves_1[1][1] + sorted_moves_1[2][1],
+            move: move1,
+            move_count: move_count['1'],
+        },
+        player2: <PlayerResult> {
+            count: sorted_moves_2[0][1] + sorted_moves_2[1][1] + sorted_moves_2[2][1],
+            move: move2,
+            move_count: move_count['2'],
+        },
         amount: winner_amount,
         amountGuardian: guardian_amount,
         players: moves.length,

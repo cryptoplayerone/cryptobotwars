@@ -1,5 +1,26 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, Model, model, property, hasMany} from '@loopback/repository';
 import {Move} from './move.model';
+
+@model()
+export class PlayerResult extends Model {
+  @property({
+    type: 'number',
+    required: true,
+  })
+  count: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  move: string;
+
+  @property({
+    type: 'object',
+    required: true,
+  })
+  move_count: object;
+}
 
 @model()
 export class Game extends Entity {
@@ -30,19 +51,19 @@ export class Game extends Entity {
   startTime: Date;
 
   @property({
+    type: 'object',
+  })
+  player1: PlayerResult;
+
+  @property({
+    type: 'object',
+  })
+  player2: PlayerResult;
+
+  @property({
     type: 'string',
   })
   winningMove: string;
-
-  @property({
-    type: 'string',
-  })
-  move1: string;
-
-  @property({
-    type: 'string',
-  })
-  move2: string;
 
   // Each winner gets this amount
   @property({

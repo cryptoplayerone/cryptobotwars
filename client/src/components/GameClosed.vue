@@ -15,39 +15,94 @@
             text-xs-center wrap
             :class="[(!videoPlaying || winningMove) ? '' : 'backr-text']"
         >
+            <v-flex xs12>
+                <div class="subheading">Outcome: </div>
+            </v-flex>
+            <v-flex xs12>
+                <GameClosedChoices
+                    :player="player"
+                    :move="MovesToIndex[our_player.move]"
+                    :us="MovesToIndex[our_player.move] === move ? 1 : 0"
+                    :player_info="our_player.count || ''"
+                    :move_info="(our_player.move_count && our_player.count) ? `${our_player.move_count[IndexToMoves[move]]}/${our_player.count}` : ''"
+                    v-if="our_player.move"
+                />
+            </v-flex>
+
+            <v-flex xs8 offset-xs2 v-if="our_player.move_values">
+                <!-- <v-flex xs12>
+                    <bars
+                      :data="our_player.move_values || []"
+                      :gradient="['#ffffff', '#ffffff']"
+                      :barWidth="30"
+                      :height="70"
+                      >
+                    </bars>
+                </v-flex> -->
+                <v-layout row>
+                    <v-flex xs2 offset-xs2>
+                        <v-icon :color="`${IndexToMoves[move] === 'rock' ? 'white' : 'grey darken-1'}`">fa-hand-rock</v-icon>
+                        <p class="subheading" text-xs-center wrap>{{our_player.move_count.rock}}</p>
+                    </v-flex>
+                    <v-flex xs2 offset-xs2>
+                        <v-icon :color="`${IndexToMoves[move] === 'paper' ? 'white' : 'grey darken-1'}`">fa-hand-paper</v-icon>
+                        <p class="subheading" text-xs-center wrap>{{our_player.move_count.paper}}</p>
+                    </v-flex>
+                    <v-flex xs2 offset-xs2>
+                        <v-icon :color="`${IndexToMoves[move] === 'scissors' ? 'white' : 'grey darken-1'}`">fa-hand-scissors</v-icon>
+                        <p class="subheading" text-xs-center wrap>{{our_player.move_count.scissors}}</p>
+                    </v-flex>
+                </v-layout>
+            </v-flex>
+
             <v-flex xs12 v-if="winningMove">
-                <v-btn
-                    large fab
-                >
-                    <v-icon x-large>{{ `fa-hand-${winningMove}` }}</v-icon>
-                </v-btn>
-                <p class="display-2">{{ `You ${MovesToIndex[winningMove] === move ? 'won!': 'lost..'}`}}</p>
-                <p class="subheading">{{ `${game.players} players have played!`}}</p>
+                <p class="display-2">{{ `You ${MovesToIndex[winningMove] === move ? 'won!': 'lost...'}`}}</p>
                 <p class="subheading" v-if="MovesToIndex[winningMove] === move">
                     {{`You should receive ${parseFloat(game.amount / 10**18).toFixed(18)} WETH`}}
                 </p>
             </v-flex>
+            <v-flex xs12></v-flex>
             <v-flex xs12>
-                <div class="subheading">Your choices: </div>
+                <div class="subheading">Opponents: </div>
             </v-flex>
-            <GameClosedChoices :player="player" :move="move" :us="1"/>
+            <v-flex xs12>
+                <GameClosedChoices
+                    :player="opponent()"
+                    :move="opponentMove"
+                    :timer="timer"
+                    :us="0"
+                    :player_info="opponent_player.count || ''"
+                    :move_info="(opponent_player.move_count && opponent_player.count) ? `${opponent_player.move_count[IndexToMoves[opponentMove]]}/${opponent_player.count}` : ''"
+                    v-on:timer-end="$emit('timer-end')"
+                />
+            </v-flex>
 
-            <v-flex xs12>
-                <div class="subheading">Opponent's choices: </div>
+            <v-flex xs8 offset-xs2 v-if="opponent_player.move_values">
+                <!-- <bars
+                  :data="opponent_player.move_values || []"
+                  :gradient="['#ffffff', '#ffffff']"
+                  :barWidth="30"
+                  :height="70"
+                  >
+                </bars> -->
+                <v-layout row>
+                    <v-flex xs2 offset-xs2>
+                        <v-icon color="grey darken-1">fa-hand-rock</v-icon>
+                        <p class="subheading" text-xs-center wrap>{{opponent_player.move_count.rock}}</p>
+                    </v-flex>
+                    <v-flex xs2 offset-xs2>
+                        <v-icon color="grey darken-1">fa-hand-paper</v-icon>
+                        <p class="subheading" text-xs-center wrap>{{opponent_player.move_count.paper}}</p>
+                    </v-flex>
+                    <v-flex xs2 offset-xs2>
+                        <v-icon color="grey darken-1">fa-hand-scissors</v-icon>
+                        <p class="subheading" text-xs-center wrap>{{opponent_player.move_count.scissors}}</p>
+                    </v-flex>
+                </v-layout>
             </v-flex>
-            <GameClosedChoices
-                :player="opponent()"
-                :move="opponentMove"
-                :timer="timer"
-                :us="0"
-                v-on:timer-end="$emit('timer-end')"
-            />
 
             <v-flex xs12 v-if="winningPayment">
                 <div v-if="MovesToIndex[winningMove] === move">
-                    <p class="subheading">
-                        {{`You won ${parseFloat(game.amount / 10**18).toFixed(18)} WETH.`}}
-                    </p>
                     <p class="subheading" text-xs-center wrap>
                         {{displayWinningPayment()}}
                     </p>
@@ -62,7 +117,7 @@
 </template>
 
 <script>
-import { IndexToPlayer, MovesToIndex, GameGuardian, Network } from '../constants';
+import { IndexToPlayer, MovesToIndex, IndexToMoves, GameGuardian, Network } from '../constants';
 import GameClosedChoices from './GameClosedChoices';
 import Timer from './Timer';
 
@@ -75,15 +130,46 @@ export default {
     data: () => ({
         IndexToPlayer,
         MovesToIndex,
+        IndexToMoves,
         winningMove: null,
         opponentMove: null,
         videoPlaying: false,
+        our_player: {},
+        opponent_player: {},
     }),
     watch: {
         game() {
-            let opponentMove = this.game[`move${this.opponent()}`];
+            let our_player = JSON.parse(JSON.stringify(
+                this.game[`player${this.player}`]
+            ));
+            let opponent_player = JSON.parse(JSON.stringify(
+                this.game[`player${this.opponent()}`]
+            ));
+
+            let opponentMove = opponent_player.move;
             if (opponentMove) this.opponentMove = MovesToIndex[opponentMove];
             if (this.game.winningMove) this.winningMove = this.game.winningMove;
+
+            if (our_player) {
+                let move_values = Object.entries(our_player.move_count).map(move => {
+                    return {value: move[1] || 0.2, title: `${move[0]}: ${move[1]}`};
+                });
+                our_player.move_values = [{value: 0, title: ''}].concat(move_values);
+            }
+
+            if (opponent_player) {
+                if (!opponent_player.count) {
+                    opponent_player.count = 1;
+                    opponent_player.move_count[opponentMove] = 1;
+                }
+                let move_values = Object.entries(opponent_player.move_count).map(move => {
+                    return {value: move[1] || 0.2, title: `${move[0]}: ${move[1]}`};
+                });
+                opponent_player.move_values = [{value: 0, title: ''}].concat(move_values);
+            }
+
+            this.our_player = our_player;
+            this.opponent_player = opponent_player;
         }
     },
     methods: {
@@ -94,7 +180,7 @@ export default {
             if (typeof this.winningPayment === 'string') {
                 return this.winningPayment;
             }
-            return `CryptoWars Guardian ${GameGuardian.raiden_address[Network]} sent you a micropayment with identifier ${this.winningPayment.identifier} at log_time ${this.winningPayment.log_time}.`
+            return `You have received a micropayment from CryptoWars Guardian ${GameGuardian.raiden_address[Network]} of ${parseFloat(this.winningPayment.amount / 10**18).toFixed(18)} WETH with identifier ${this.winningPayment.identifier} at log_time ${this.winningPayment.log_time}.`
         },
         videoEnded() {
             this.videoPlaying = false;
