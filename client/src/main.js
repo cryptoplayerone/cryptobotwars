@@ -16,6 +16,9 @@ Vue.use(VueYouTubeEmbed)
 import Bars from 'vuebars';
 Vue.use(Bars);
 
+import LoadScript from 'vue-plugin-load-script';
+Vue.use(LoadScript);
+
 Vue.config.productionTip = false;
 
 Vue.use(VueAxios, axios);
