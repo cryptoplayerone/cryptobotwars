@@ -32,7 +32,9 @@
                 <p class="display-1">How to play</p>
                 <p>To play the game, you need to run a Raiden node on Mainnet. It only works with the <a href="https://github.com/raiden-network/raiden/releases/tag/v0.100.1" target="_blank">Red Eyes release</a>. Check out the <a href="https://raiden-network.readthedocs.io/en/stable/" target="_blank">Raiden Installation Guide</a> for details.</p>
 
-                <p>You need to set the <span class="font-weight-black">--rpccorsdomain</span> flag to the game's domain.</p>
+                <p class="red">To be able to receive rewards, you need to make sure you have a path from the Game Guardian <span class="font-weight-black">{{gameAddresses.guardian}}</span> to your node, that has enough deposits in the rewards direction. You may need to ask other nodes to open a channel with you and make a deposit.</p>
+
+                <p>When running Raiden, you need to set the <span class="font-weight-black">--rpccorsdomain</span> flag to the game's domain.</p>
                 <p class="red">This <span class="font-weight-black">will</span> give access to the game to make payments <span class="font-weight-black">on your behalf</span> when choosing a move. Do not deposit more tokens than you are willing to lose.</p>
 
                 <p>Example:</p>
