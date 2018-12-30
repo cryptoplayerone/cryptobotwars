@@ -43,27 +43,14 @@
                 ></v-textarea>
 
                 <p class="display-1">Settings</p>
-                <p>To play the game, you need to provide your Raiden node info: the <span class="font-weight-black">--address</span> and <span class="font-weight-black">--api-address</span>.</p>
-                <p><span class="font-weight-black red">Your Ethereum address must be checksummed!</span> E.g. <span class="font-weight-black">0xFeA60432EEb8E858364E0f8953F1386e853A7804</span> not <span class="font-weight-regular">0xfea60432eeb8e858364e0f8953f1386e853a7804</span></p>
+                <p>To play the game, you need to provide your Raiden node <span class="font-weight-black">--api-address</span>.</p>
                 <v-form v-model="valid">
-                    <v-text-field
-                        v-model="address"
-                        :rules="addressRules"
-                        :counter="42"
-                        label="Raiden node Ethereum address"
-                        placeholder="0x0000000000000000000000000000000000000000"
-                        :value="userInfo.address"
-                        v-on:change="updateInfo()"
-                        :append-icon="address ? `check` : ``"
-                        required
-                    ></v-text-field>
                     <v-text-field
                         v-model="ip"
                         :rules="ipRules"
                         label="Raiden public API RPC server"
                         placeholder="127.0.0.1:5001"
                         :value="userInfo.ip"
-                        v-on:change="updateInfo()"
                         :append-icon="ip ? `check` : ``"
                         required
                     ></v-text-field>
@@ -98,11 +85,6 @@ export default {
         return {
             dialog: false,
             valid: false,
-            address: '',
-            addressRules: [
-                v => !!v || 'Address is required',
-                v => v.length === 42 || 'Address must be 42 characters'
-            ],
             ip: '',
             ipRules: [
                 v => !!v || 'IP is required',
@@ -122,18 +104,13 @@ export default {
     },
     methods: {
         closeDialog() {
-            if(this.address && this.ip) {
+            if(this.ip) {
                 this.dialog = false;
-            }
-        },
-        updateInfo() {
-            if(this.address && this.ip) {
                 this.$emit('set-info', {
-                    address: this.address,
                     ip: `http://${this.ip}`,
                 });
             }
-        }
+        },
     }
 }
 </script>

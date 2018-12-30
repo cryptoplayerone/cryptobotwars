@@ -139,6 +139,7 @@ export default {
     }),
     watch: {
         game() {
+            if (!this.game[`player${this.player}`]) return;
             let our_player = JSON.parse(JSON.stringify(
                 this.game[`player${this.player}`]
             ));

@@ -6,6 +6,11 @@ export class UserRaidenApi {
         this.target = target;
     }
 
+    address() {
+        const api = `${this.ip}/api/v1/address`;
+        return this.axios.get(api);
+    }
+
     pay(payload) {
         const api = `${this.ip}/api/v1/payments/${this.token}/${this.target}`;
         console.log('pay', api, payload);

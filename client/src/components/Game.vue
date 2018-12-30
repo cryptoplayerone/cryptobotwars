@@ -161,12 +161,18 @@ export default {
             self.gameRevealed = false;
         },
         setUserRaidenApi() {
+            if (!this.userInfo.ip) return;
             this.userRaidenApi = new UserRaidenApi(
                 Vue.axios,
                 this.userInfo.ip,
                 GameGuardian.token_address[Network],
                 GameGuardian.raiden_address[Network]
             );
+            this.userRaidenApi.address().then(response => {
+                if (!response.data)
+                    throw new Error('Could not get your Raiden node Ethereum address');
+                this.userInfo.address = response.data.our_address;
+            }).catch(alert);
         },
         restartGame() {
             this.swiper.slideTo(0, 1000, false);
