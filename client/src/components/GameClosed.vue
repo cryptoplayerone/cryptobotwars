@@ -58,7 +58,7 @@
             <v-flex xs12 v-if="winningMove">
                 <p class="display-2">{{ `You ${MovesToIndex[winningMove] === move ? 'won!': 'lost...'}`}}</p>
                 <p class="subheading" v-if="MovesToIndex[winningMove] === move">
-                    {{`You should receive ${parseFloat(game.amount / 10**18).toFixed(18)} WETH`}}
+                    Wait for the off-chain reward.
                 </p>
             </v-flex>
             <v-flex xs12></v-flex>
