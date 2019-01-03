@@ -13,6 +13,7 @@
         </v-flex>
         <v-flex xs2>
             <v-btn v-if="move"
+                class="move-btn"
                 large fab light :color="us === 1 ? 'white' : 'grey darken-1'"
             >
                 <v-icon dark x-large>{{ `fa-hand-${IndexToMoves[move]}` }}</v-icon>
@@ -44,3 +45,10 @@ export default {
     }),
 }
 </script>
+
+<style>
+.move-btn {
+    width: 80px!important;
+    height: 80px!important;
+}
+</style>
