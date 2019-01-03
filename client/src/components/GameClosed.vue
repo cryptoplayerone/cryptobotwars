@@ -2,7 +2,7 @@
     <v-container fill-height nomargin>
         <v-layout text-xs-center wrap v-if="move && raiden_payment && !winningMove">
             <youtube
-                :video-id="'1L5gW1fhmbc'"
+                video-id="_lB6bvv_TpA"
                 :player-vars="{ autoplay: 1 }"
                 :class="[videoPlaying ? 'backgr-vid-play' : 'backgr-vid-end', 'full']"
                 @ended="videoEnded"
