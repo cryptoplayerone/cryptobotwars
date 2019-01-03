@@ -11,6 +11,12 @@
             :gameAddresses="gameAddresses"
             v-on:set-info="setInfo"
         />
+        <v-btn absolute small top right fab
+            class="menu chat-btn"
+            @click="openChat()"
+        >
+            <v-icon>fa-comments</v-icon>
+        </v-btn>
     </v-content>
   </v-app>
 </template>
@@ -34,6 +40,7 @@ export default {
                 token: GameGuardian.token_address[Network],
                 guardian: GameGuardian.raiden_address[Network],
                 amount: GameGuardian.amount,
+                chat: GameGuardian.chat,
             },
         }
     },
@@ -43,6 +50,9 @@ export default {
         },
         needsInfo() {
             this.infoRequired = true;
+        },
+        openChat() {
+            window.open(GameGuardian.chat, '_blank');
         }
     }
 }
@@ -51,5 +61,8 @@ export default {
 <style>
 .backgr {
     background-color: black;
+}
+.chat-btn {
+    margin-right: 35px;
 }
 </style>

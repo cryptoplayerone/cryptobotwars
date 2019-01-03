@@ -13,7 +13,7 @@
 
         <v-card>
             <v-card-title
-                class="headline grey lighten-2"
+                class="headline grey darken-4"
                 primary-title
             >
                 Rock-Paper-Scissors on Raiden Network
@@ -21,7 +21,7 @@
 
             <v-card-text>
                 <p class="display-1">About</p>
-                <a href="https://github.com/cryptoplayerone/cryptobotwars" target="_blank">Github</a>
+                <a href="https://github.com/cryptoplayerone/cryptobotwars" target="_blank">Github source code</a>
                 <p>Can be played by an unlimited number of simultaneous users, who choose between the game's two players. There is only 1 game playing at any point in time. You might have to wait for the current game to conclude before being able to play.</p>
                 <p>You choose a player and a move (rock, paper or scissors). The Game Client (web app) sends your encrypted move data to the Game Guardian, and triggers an off-chain payment of <span class="font-weight-black">{{parseFloat(gameAddresses.amount / 10**18).toFixed(18)}} WETH</span> on your behalf, from your Raiden node to the Game Guardian address: <a :href="'https://etherscan.io/address/' + gameAddresses.guardian" target="_blank"><span class="font-weight-black">{{gameAddresses.guardian}}</span></a>.</p>
                 <p>The game uses the following token: <a :href="'https://etherscan.io/address/' + gameAddresses.token" target="_blank"><span class="font-weight-black">{{gameAddresses.token}}</span></a>.</p>
@@ -32,7 +32,7 @@
                 <p class="display-1">How to play</p>
                 <p>To play the game, you need to run a Raiden node on Mainnet. It only works with the <a href="https://github.com/raiden-network/raiden/releases/tag/v0.100.1" target="_blank">Red Eyes release</a>. Check out the <a href="https://raiden-network.readthedocs.io/en/stable/" target="_blank">Raiden Installation Guide</a> for details.</p>
 
-                <p class="red">To be able to receive rewards, you need to make sure you have a path from the Game Guardian <span class="font-weight-black">{{gameAddresses.guardian}}</span> to your node, that has enough deposits in the rewards direction. You may need to ask other nodes to open a channel with you and make a deposit.</p>
+                <p class="red">To be able to receive rewards, you need to make sure you have a path from the Game Guardian <span class="font-weight-black">{{gameAddresses.guardian}}</span> to your node, that has enough deposits in the rewards direction. You may need to ask other nodes to open a channel with you and make a deposit, you can ask for help in <a :href="gameAddresses.chat" target="_blank" class="white--text">our chat</a>.</p>
 
                 <p>When running Raiden, you need to set the <span class="font-weight-black">--rpccorsdomain</span> flag to the game's domain.</p>
                 <p class="red">This <span class="font-weight-black">will</span> give access to the game to make payments <span class="font-weight-black">on your behalf</span> when choosing a move. Do not deposit more tokens than you are willing to lose.</p>
