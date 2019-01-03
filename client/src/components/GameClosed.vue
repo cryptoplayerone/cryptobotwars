@@ -24,7 +24,7 @@
                     :player="player"
                     :move="MovesToIndex[our_player.move] || move"
                     :us="our_player.move ? (MovesToIndex[our_player.move] === move ? 1 : 0) : 1"
-                    :player_info="`${our_player.count} players` || ''"
+                    :player_info="our_player.count ? `${our_player.count} players` : ''"
                     :move_info="(our_player.move_count && our_player.count) ? `${our_player.move_count[IndexToMoves[move]]}/${our_player.count} votes` : ''"
                 />
             </v-flex>
