@@ -1,0 +1,34 @@
+participant User
+participant UserRaiden
+participant GameClient
+participant GameGuardianServer
+participant GameGuardianRaiden
+participant Robot1
+participant Robot2
+
+User -> GameClient: play(player, move)
+
+Note over GameClient: moveHash = sha3(\n userEthAddress, gameId, \nplayerId, moveId,\n paymentAmount, secret)
+GameClient -> GameGuardianServer: initMove(\n playerId, userEthAddress,\n moveHash)
+GameGuardianServer -> GameClient: paymentIdentifier
+Note over GameGuardianServer: store move \n data & paymentIdentifier
+
+GameClient -> UserRaiden: pay(paymentAmount,\n GameGuardianRaiden address,\n paymentIdentifier)
+UserRaiden -> GameGuardianRaiden: pay(paymentAmount, paymentIdentifier)
+
+Note over GameClient: wait until game is closed
+GameClient -> GameGuardianServer: revealMove(move,\n secret, paymentAmount)
+Note over GameGuardianServer: check moveHash
+
+Note over GameClient: wait until game has ended
+GameClient -> GameGuardianServer: revealGame(gameId)
+GameGuardianServer -> GameGuardianRaiden: get payment history
+GameGuardianRaiden -> GameGuardianServer: payment history
+Note over GameGuardianServer: check UsersRaiden payments \n move1 = majority vote on player1 move\n move2 = majority vote on player2 move \n winner(player1 move1, player2 move2) \n get all winners(winnerPlayerId, winnerMoveId) \n user reward = 90%*paymentAmount*users/winners
+GameGuardianServer -> GameGuardianRaiden: pay winners
+GameGuardianServer -> Robot1: win/lose
+GameGuardianServer -> Robot2: win/lose
+GameGuardianRaiden -> UserRaiden: pay reward if winner
+
+GameGuardianServer -> GameClient: game results
+GameClient -> User: game results
