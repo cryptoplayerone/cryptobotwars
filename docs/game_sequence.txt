@@ -32,3 +32,7 @@ GameGuardianRaiden -> UserRaiden: pay reward if winner
 
 GameGuardianServer -> GameClient: game results
 GameClient -> User: game results
+
+GameClient -> UserRaiden: poll last payment
+UserRaiden -> GameClient: last payment from GameGuardianRaiden
+GameClient -> User: show if payment received

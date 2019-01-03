@@ -58,3 +58,7 @@ This is not production ready - play at your own risk if you want to give a hand 
 - controls the game time intervals based on the received values from the `GameGuardian Server`
 - sends the unencrypted move data to the `GameGuardian Server` after the first stage of the game is finalized
 - sends a signal to the `GameGuardian Server` that the game has ended and it expects the game results & robot duel
+
+## Game Sequence
+
+![Game Sequence](/docs/game_sequence.svg)
