@@ -161,7 +161,7 @@ export class GameController {
         }
     };
     let sorted_moves_1: any = [], sorted_moves_2: any = [];
-    let winningMove: string, winningPlayer: string, move1: string, move2: string;
+    let winningMove: string, move1: string, move2: string;
     let gameUpdate: Partial<Game>;
     let raidenPayment: any, raidenPayments: any;
 
@@ -227,10 +227,10 @@ export class GameController {
         move1 = RockPaperScissorsGetLoser[move2];
     }
     winningMove = RockPaperScissorsGetLoser[move1] === move2 ? move1 : move2;
-    winningPlayer = move1 === winningMove ? '1' : '2';
 
     validMoves.forEach((move: Move) => {
-        if (move.move === winningMove && move.playerId === winningPlayer) {
+        // We reward both players if their final moves are the same
+        if (move.move === winningMove) {
             winningMoves.push(move);
         }
     });
