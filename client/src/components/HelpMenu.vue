@@ -41,7 +41,7 @@
                 <v-textarea
                     solo
                     name="input-7-1"
-                    value='raiden-v0.100.1 --accept-disclaimer --eth-rpc-endpoint https://mainnet.infura.io/v3/[YOUR_TOKEN] --keystore-path ~/Library/Ethereum/keystore --rpc --rpccorsdomain http://127.0.0.1:*/*,http://cryptoplayer.one:*/* --api-address http://127.0.0.1:5001 --address [YOUR_ETHEREUM_ADDRESS]'
+                    value='raiden-v0.100.1 --accept-disclaimer --eth-rpc-endpoint https://mainnet.infura.io/v3/[YOUR_TOKEN] --keystore-path ~/Library/Ethereum/keystore --rpc --rpccorsdomain http://127.0.0.1:*/*,https://cryptoplayer.one:*/* --api-address http://127.0.0.1:5001 --address [YOUR_ETHEREUM_ADDRESS]'
                 ></v-textarea>
 
                 <p class="display-1">Settings</p>
