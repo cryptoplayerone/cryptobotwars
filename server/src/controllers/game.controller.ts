@@ -145,7 +145,7 @@ export class GameController {
     // send Raiden payments to all winners
     let game: Game;
     let currentTime, resolveTime, deltaTime;
-    let moves: Move[], winningMoves: Move[] = [];
+    let moves: Move[], validMoves: Move[] = [], winningMoves: Move[] = [];
     let moveController;
     let total_amount: number = 0, winner_amount: number, guardian_amount: number;
     let move_count: any = {
@@ -161,7 +161,7 @@ export class GameController {
         }
     };
     let sorted_moves_1: any = [], sorted_moves_2: any = [];
-    let winningMove: string, move1: string, move2: string;
+    let winningMove: string, winningPlayer: string, move1: string, move2: string;
     let gameUpdate: Partial<Game>;
     let raidenPayment: any, raidenPayments: any;
 
@@ -204,7 +204,7 @@ export class GameController {
             if (raidenPayment) {
                 total_amount += sentMove.amount;
                 move_count[sentMove.playerId][sentMove.move] += 1;
-                winningMoves.push(sentMove);
+                validMoves.push(sentMove);
             }
         }
     }
@@ -227,10 +227,17 @@ export class GameController {
         move1 = RockPaperScissorsGetLoser[move2];
     }
     winningMove = RockPaperScissorsGetLoser[move1] === move2 ? move1 : move2;
+    winningPlayer = move1 === winningMove ? '1' : '2';
+
+    validMoves.forEach((move: Move) => {
+        if (move.move === winningMove && move.playerId === winningPlayer) {
+            winningMoves.push(move);
+        }
+    });
 
     guardian_amount = total_amount / 10;
     total_amount -= guardian_amount;
-    winner_amount = total_amount / moves.length;
+    winner_amount = total_amount / winningMoves.length;
 
     gameUpdate = {
         winningMove,
@@ -253,11 +260,9 @@ export class GameController {
 
     // Make Raiden payments to winners
     winningMoves.forEach((move: Move) => {
-        if (move.move === winningMove) {
-            this.sendRaidenPayment(TOKEN, move.userAddress, move.amount, move.paymentIdentifier).catch((error) => {
-                console.log(error);
-            });
-        }
+        this.sendRaidenPayment(TOKEN, move.userAddress, winner_amount, move.paymentIdentifier).catch((error) => {
+            console.log(error);
+        });
     });
 
     this.sendRobotCommands(move1, move2, winningMove).catch((error) => {
@@ -355,7 +360,6 @@ export class GameController {
     return this.sendRobotCommand(`${player}_wins`).then(() => {
         return this.wait(timeout);
     }).then(() => {
-        console.log(`${player}_stop`);
         return this.sendRobotCommand(`${player}_stop`);
     });
   }
