@@ -320,35 +320,6 @@ export class GameController {
     await this.gameRepository.deleteById(id);
   }
 
-  @get('/robot/{robot}/{command}', {
-    responses: {
-      '200': {
-        description: 'Robot',
-      },
-    },
-  })
-  async robot(
-    @param.path.string('robot') robot: string,
-    @param.path.string('command') command: string
-): Promise<any> {
-    return await this.sendRobotCommand(`${robot}_${command}`);
-  }
-
-  @get('/robots/{move1}/{move2}/{winningMove}', {
-    responses: {
-      '200': {
-        description: 'Robot',
-      },
-    },
-  })
-  async robots(
-    @param.path.string('move1') move1: string,
-    @param.path.string('move2') move2: string,
-    @param.path.string('winningMove') winningMove: string,
-): Promise<any> {
-    return await this.sendRobotCommands(move1, move2, winningMove);
-  }
-
   async getRaidenPayments(token: string): Promise<any> {
     const context: Context = new Context();
     context.bind('datasources.raiden').to(RaidenDataSource);
