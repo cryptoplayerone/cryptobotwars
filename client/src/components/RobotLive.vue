@@ -38,8 +38,19 @@ export default {
     methods: {
         ready() {
             setTimeout(() => {
-                this.volume = 1;
-                console.log('volume', this.player.getVolume(), this.player.isMuted());
+                let intervalId, retries = 0;
+                intervalId = setInterval(() => {
+                    retries ++;
+                    console.log('volume', this.player.getVolume(), this.player.isMuted());
+                    if (retries > 10 || (
+                        this.player.getVolume() > 0 &&
+                        !this.player.isMuted()
+                    )) {
+                        clearInterval(intervalId);
+                    }
+                    this.volume = 1;
+                    this.player.unmute();
+                }, 100);
             }, 60000);
         }
     }

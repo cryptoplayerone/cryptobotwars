@@ -41,6 +41,7 @@
             <v-layout text-xs-center wrap fullheight>
                 <v-flex xs8>
                     <RobotLive
+                        v-if="game"
                         :stream="stream"
                     />
                     <!-- <RobotLive
