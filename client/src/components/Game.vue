@@ -368,7 +368,7 @@ export default {
             let intervalID = setInterval(() => {
                 repeatTimes ++;
                 if (!this.winningPayment) {
-                    if (repeatTimes < 10) {
+                    if (repeatTimes < 20) {
                         console.log('Trying to find winning Raiden payment from CyryptoWarsGuardian');
                         this.getWinningPayment();
                     } else {
