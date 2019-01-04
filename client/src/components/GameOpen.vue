@@ -9,7 +9,7 @@
                     color="white"
                     v-on:timer-end="$emit('timer-end')"
                 />
-                </br>
+                <br>
             </v-flex>
             <v-flex xs12>
                 <div class="display-1">Choose:</div>
@@ -40,7 +40,7 @@
                 >
                     <img src="/yoda_t2.png" alt="avatar">
                 </v-avatar>
-                </br>
+                <br>
             </v-flex>
             <v-flex xs12>
                 <v-btn
@@ -66,11 +66,11 @@
                 </v-btn>
             </v-flex>
             <v-flex xs12>
-                </br>
+                <br>
                 <div class="subheading">You will pay {{parseFloat(gameGuardianAmount / 10**18).toFixed(18)}} WETH.</div>
             </v-flex>
             <v-flex xs12>
-                </br></br>
+                <br><br>
                 <v-btn
                     v-on:click.stop="play()"
                     large fab

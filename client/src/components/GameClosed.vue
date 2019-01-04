@@ -119,12 +119,10 @@
 <script>
 import { IndexToPlayer, MovesToIndex, IndexToMoves, GameGuardian, Network } from '../constants';
 import GameClosedChoices from './GameClosedChoices';
-import Timer from './Timer';
 
 export default {
     components: {
         GameClosedChoices,
-        Timer,
     },
     props: ['game', 'timer', 'player', 'move', 'winningPayment', 'raiden_payment'],
     data: () => ({

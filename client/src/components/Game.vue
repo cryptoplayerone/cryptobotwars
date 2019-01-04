@@ -75,8 +75,6 @@
         >
             <v-icon>fa-chevron-right</v-icon>
         </v-btn> -->
-  </div>
-
     </swiper>
 </template>
 
@@ -88,10 +86,9 @@ import 'swiper/dist/css/swiper.css';
 import StartPage from './StartPage';
 import GameOpen from './GameOpen';
 import GameClosed from './GameClosed';
-import GameEnd from './GameEnd';
 import RobotLive from './RobotLive';
-import { MovesToIndex, IndexToMoves, GameGuardian, GameState, GameStateIndex, Network } from '../constants';
-import { UserRaidenApi, GuardianApi } from '../utils';
+import { IndexToMoves, GameGuardian, GameState, GameStateIndex, Network } from '../constants';
+import { UserRaidenApi } from '../utils';
 
 Vue.use(VueAwesomeSwiper);
 
@@ -103,7 +100,6 @@ export default {
         StartPage,
         GameOpen,
         GameClosed,
-        GameEnd,
         RobotLive,
     },
     data() {
@@ -250,7 +246,7 @@ export default {
                 }).catch((error) => {
                     alert(`${error} on ${self.userRaidenApi.ip}`);
                 });
-            };
+            }
             play();
         },
         initMove() {
