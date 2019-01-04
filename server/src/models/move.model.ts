@@ -50,7 +50,7 @@ export class Move extends Entity {
   @property({
     type: 'number',
   })
-  amount?: number;
+  amount: number;
 
   @property({
     type: 'date',

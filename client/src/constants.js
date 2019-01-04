@@ -51,7 +51,6 @@ export const GameGuardian = {
         3: process.env.VUE_APP_GUARDIAN_TOKEN_ADDRESS_ROPSTEN,
         42: process.env.VUE_APP_GUARDIAN_TOKEN_ADDRESS_KOVAN,
     },
-    amount: process.env.VUE_APP_GUARDIAN_MOVE_WEI,
 }
 
 export const Network = process.env.VUE_APP_NETWORK;

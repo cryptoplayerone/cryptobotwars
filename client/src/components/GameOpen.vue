@@ -67,7 +67,7 @@
             </v-flex>
             <v-flex xs12>
                 </br>
-                <div class="subheading">You will pay {{parseFloat(GameGuardian.amount / 10**18).toFixed(18)}} WETH.</div>
+                <div class="subheading">You will pay {{parseFloat(gameGuardianAmount / 10**18).toFixed(18)}} WETH.</div>
             </v-flex>
             <v-flex xs12>
                 </br></br>
@@ -91,7 +91,7 @@ import { MovesToIndex, PlayerToIndex, GameGuardian } from '../constants';
 import Timer from './Timer';
 
 export default {
-    props: ['timer', 'player', 'move', 'players1', 'players2'],
+    props: ['timer', 'player', 'move', 'players1', 'players2', 'gameGuardianAmount'],
     components: {
         Timer,
     },

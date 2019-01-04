@@ -15,6 +15,7 @@
                         :move="move"
                         :players1="players1"
                         :players2="players2"
+                        :gameGuardianAmount="gameGuardianAmount"
                         v-on:player-chosen="setPlayer"
                         v-on:move-chosen="setMove"
                         v-on:play="userPlay"
@@ -97,7 +98,7 @@ Vue.use(VueAwesomeSwiper);
 const web3Utils = require('web3-utils');
 
 export default {
-    props: ['userInfo'],
+    props: ['userInfo', 'guardianApi', 'gameGuardianAmount'],
     components: {
         StartPage,
         GameOpen,
@@ -118,10 +119,6 @@ export default {
                 slidesPerView: "auto",
             },
             userRaidenApi: null,
-            guardianApi: new GuardianApi(
-                Vue.axios,
-                GameGuardian.host,
-            ),
             GameState,
             stream: GameGuardian.stream,
             timer: {intervalGame: 0, intervalResolve: 0, value: 0},
@@ -243,7 +240,7 @@ export default {
                     return;
                 }
                 self.userRaidenApi.pay({
-                    amount: GameGuardian.amount,
+                    amount: self.gameGuardianAmount,
                     identifier: self.paymentIdentifier,
                 }).then((response) => {
                     console.log('raiden payment response', response);
@@ -287,7 +284,7 @@ export default {
             if (!this.game._id) throw new Error('Cannot send move. No game._id.');
             if (!secret) throw new Error('Cannot send move. No secret was chosen.');
             this.secret = secret;
-            return web3Utils.soliditySha3(this.userInfo.address, this.game._id, this.player, IndexToMoves[this.move], GameGuardian.amount, secret);
+            return web3Utils.soliditySha3(this.userInfo.address, this.game._id, this.player, IndexToMoves[this.move], this.gameGuardianAmount, secret);
         },
         setCurrentGame() {
             return this.guardianApi.getGame().then((response) => {
@@ -338,7 +335,7 @@ export default {
                 this.guardianApi.revealMove(this.moveStarted._id, {
                     move: IndexToMoves[this.move],
                     secret: this.secret,
-                    amount: GameGuardian.amount,
+                    amount: this.gameGuardianAmount,
                 }).then((response) => {
                     console.log('revealMove', response);
                 }).catch(alert);

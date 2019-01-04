@@ -1,6 +1,19 @@
 import {Entity, Model, model, property, hasMany} from '@loopback/repository';
 import {Move} from './move.model';
 
+export interface GameAmountInterface {
+    amount: number;
+}
+
+@model()
+export class GameAmount extends Model {
+  @property({
+    type: 'number',
+    required: true,
+  })
+  amount: number;
+}
+
 @model()
 export class PlayerResult extends Model {
   @property({
@@ -30,6 +43,12 @@ export class Game extends Entity {
     generated: true,
   })
   _id: string;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  move_amount: number;
 
   @property({
     type: 'number',

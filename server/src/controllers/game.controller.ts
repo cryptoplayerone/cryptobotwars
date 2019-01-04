@@ -14,15 +14,16 @@ import {
   patch,
   del,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
 import {Context} from '@loopback/context';
-import {Game, Move, PlayerResult} from '../models';
+import {Game, Move, PlayerResult, GameAmount, GameAmountInterface} from '../models';
 import {GameRepository} from '../repositories';
 import {MoveController} from './move.controller';
 import {Raiden} from './raiden.controller';
 import {Robot} from './robot.controller';
 import {RaidenDataSource, RobotDataSource} from '../datasources';
-import {IndexToPlayer, TOKEN} from '../constants';
+import {IndexToPlayer, TOKEN, TOKEN_AMOUNT_WEI} from '../constants';
 
 import {RockPaperScissorsGetLoser} from '../rpsWinner';
 
@@ -32,17 +33,52 @@ export class GameController {
     public gameRepository : GameRepository,
   ) {}
 
-  @post('/game', {
+  @get('/game/amount', {
+    responses: {
+        '200': {
+          description: 'Game move amount',
+          content: {'application/json': {schema: {'x-ts-type': GameAmount}}},
+        },
+    }
+  })
+  getAmount(): GameAmountInterface {
+    return {
+        amount: TOKEN_AMOUNT_WEI,
+    };
+  }
+
+  @get('/game/create', {
     responses: {
       '200': {
         description: 'Game model instance',
         content: {'application/json': {schema: {'x-ts-type': Game}}},
       },
+      '403': {
+        description: 'Previous game has not ended',
+      }
     },
   })
-  async create(@requestBody() game: Game): Promise<Game> {
-    game.startTime = new Date();
-    return await this.gameRepository.create(game);
+  async create(): Promise<Game> {
+    // Return an existing running game or create a new one
+    let game: Game, newGame: any = {};
+    let now: number, deltaTime: number;
+
+    game = (await this.gameRepository.find({order: ['_id DESC'], limit: 1}))[0];
+
+    if (game) {
+        now = new Date().getTime();
+        deltaTime = game.startTime.getTime() + game.gameTime;
+        if (now < deltaTime) {
+            return game;
+        }
+        if (now < deltaTime + game.resolveTime) {
+            throw new HttpErrors.Forbidden('Previous game has not ended');
+        }
+    }
+
+    newGame.startTime = new Date();
+    newGame.move_amount = TOKEN_AMOUNT_WEI;
+    return await this.gameRepository.create(newGame);
   }
 
   @get('/game/count', {
@@ -130,6 +166,10 @@ export class GameController {
     let raidenPayment: any, raidenPayments: any;
 
     game = await this.gameRepository.findById(id);
+    if (!game) {
+        throw new HttpErrors.NotFound('Game not found');
+    }
+
     currentTime = new Date().getTime();
     deltaTime = game.gameTime + game.resolveTime;
     resolveTime = game.startTime.getTime() + deltaTime;
@@ -157,7 +197,7 @@ export class GameController {
     for (let i = 0; i < moves.length; i++) {
         let sentMove: Move = moves[i];
 
-        if (sentMove.amount && sentMove.move) {
+        if (sentMove.amount && sentMove.move && sentMove.amount >= game.move_amount) {
             raidenPayment = raidenPayments[0].find((payment: any) => {
                 return payment.identifier === sentMove.paymentIdentifier;
             });
@@ -213,7 +253,7 @@ export class GameController {
 
     // Make Raiden payments to winners
     winningMoves.forEach((move: Move) => {
-        if (move.move && move.amount && move.move === winningMove) {
+        if (move.move === winningMove) {
             this.sendRaidenPayment(TOKEN, move.userAddress, move.amount, move.paymentIdentifier).catch((error) => {
                 console.log(error);
             });
@@ -243,15 +283,15 @@ export class GameController {
 
     moveController = new MoveController(await this.gameRepository.move);
 
-    game = this.findById(id);
+    game = await this.findById(id);
     if (!game) {
-        throw new Error('No game found with this id.');
+        throw new HttpErrors.NotFound('No game found with this id.');
     }
 
     move.gameId = id;
     let count = await moveController.count();
     move.paymentIdentifier = count.count + 1;
-    console.log('move', move);
+    move.amount = game.move_amount;
     return await moveController.create(move);
   }
 
@@ -280,34 +320,34 @@ export class GameController {
     await this.gameRepository.deleteById(id);
   }
 
-//   @get('/robot/{robot}/{command}', {
-//     responses: {
-//       '200': {
-//         description: 'Robot',
-//       },
-//     },
-//   })
-//   async robot(
-//     @param.path.string('robot') robot: string,
-//     @param.path.string('command') command: string
-// ): Promise<any> {
-//     return await this.sendRobotCommand(`${robot}_${command}`);
-//   }
+  @get('/robot/{robot}/{command}', {
+    responses: {
+      '200': {
+        description: 'Robot',
+      },
+    },
+  })
+  async robot(
+    @param.path.string('robot') robot: string,
+    @param.path.string('command') command: string
+): Promise<any> {
+    return await this.sendRobotCommand(`${robot}_${command}`);
+  }
 
-//   @get('/robots/{move1}/{move2}/{winningMove}', {
-//     responses: {
-//       '200': {
-//         description: 'Robot',
-//       },
-//     },
-//   })
-//   async robots(
-//     @param.path.string('move1') move1: string,
-//     @param.path.string('move2') move2: string,
-//     @param.path.string('winningMove') winningMove: string,
-// ): Promise<any> {
-//     return await this.sendRobotCommands(move1, move2, winningMove);
-//   }
+  @get('/robots/{move1}/{move2}/{winningMove}', {
+    responses: {
+      '200': {
+        description: 'Robot',
+      },
+    },
+  })
+  async robots(
+    @param.path.string('move1') move1: string,
+    @param.path.string('move2') move2: string,
+    @param.path.string('winningMove') winningMove: string,
+): Promise<any> {
+    return await this.sendRobotCommands(move1, move2, winningMove);
+  }
 
   async getRaidenPayments(token: string): Promise<any> {
     const context: Context = new Context();
@@ -336,6 +376,7 @@ export class GameController {
     const robot = await context.get<Robot>(
     'controllers.Robot',
     );
+    console.log('robot', command);
     return await robot.robot[command]();
   }
 

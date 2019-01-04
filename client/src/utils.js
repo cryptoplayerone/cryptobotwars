@@ -35,6 +35,11 @@ export class GuardianApi {
         this.ip = ip;
     }
 
+    getAmount() {
+        const api = `${this.ip}/game/amount`;
+        return this.axios.get(api);
+    }
+
     getGame() {
         const api = `${this.ip}/game?filter={"offset":0,"limit":1,"skip":0,"order":"startTime%20DESC"}`;
         return this.axios.get(api);
@@ -46,8 +51,8 @@ export class GuardianApi {
     }
 
     startGame() {
-        const api = `${this.ip}/game`;
-        return this.axios.post(api, {});
+        const api = `${this.ip}/game/create`;
+        return this.axios.get(api);
     }
 
     revealGame(gameid) {

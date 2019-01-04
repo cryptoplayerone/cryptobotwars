@@ -3,12 +3,16 @@
     <v-content class="backgr">
         <Game
             :userInfo="userInfo"
+            :guardianApi="guardianApi"
+            :gameGuardianAmount="gameGuardianAmount"
             v-on:needs-info="needsInfo()"
         />
         <HelpMenu
             :infoRequired="infoRequired"
             :userInfo="userInfo"
             :gameAddresses="gameAddresses"
+            :chatUrl="chatUrl"
+            :amount="gameGuardianAmount"
             v-on:set-info="setInfo"
         />
         <v-btn absolute small top right fab
@@ -22,9 +26,11 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import HelpMenu from './components/HelpMenu';
 import Game from './components/Game';
 import { GameGuardian, Network } from './constants';
+import { GuardianApi } from './utils';
 
 export default {
     name: 'App',
@@ -39,10 +45,22 @@ export default {
             gameAddresses: {
                 token: GameGuardian.token_address[Network],
                 guardian: GameGuardian.raiden_address[Network],
-                amount: GameGuardian.amount,
-                chat: GameGuardian.chat,
             },
+            chatUrl: GameGuardian.chat,
+            gameGuardianAmount: 0,
+            guardianApi: new GuardianApi(
+                Vue.axios,
+                GameGuardian.host,
+            ),
         }
+    },
+    mounted() {
+        this.guardianApi.getAmount().then((response) => {
+            if (!response.data) {
+                throw new Error('No move amount received from the server');
+            }
+            this.gameGuardianAmount = response.data.amount;
+        }).catch(console.log);
     },
     methods: {
         setInfo(info) {
