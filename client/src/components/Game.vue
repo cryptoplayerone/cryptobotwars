@@ -166,7 +166,9 @@ export default {
                 if (!response.data)
                     throw new Error('Could not get your Raiden node Ethereum address');
                 this.userInfo.address = response.data.our_address;
-            }).catch(alert);
+            }).catch((error) => {
+                alert(`${error} on ${this.userRaidenApi.ip}. Make sure your Raiden node's --rpccorsdomain is set correctly.`);
+            });
         },
         restartGame() {
             this.swiper.slideTo(0, 1000, false);
